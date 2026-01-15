@@ -11,6 +11,36 @@
     <script src="https://unpkg.com/react-dom@18/umd/react-dom.production.min.js" crossorigin></script>
     <script src="https://unpkg.com/@babel/standalone/babel.min.js"></script>
     <script src="https://cdn.tailwindcss.com"></script>
+    
+    <!-- Firebase SDK -->
+    <script type="module">
+        import { initializeApp } from 'https://www.gstatic.com/firebasejs/10.7.1/firebase-app.js';
+        import { getFirestore, doc, setDoc, updateDoc, serverTimestamp } from 'https://www.gstatic.com/firebasejs/10.7.1/firebase-firestore.js';
+
+        const firebaseConfig = {
+            apiKey: "AIzaSyDbhLrj7jIvfDkdbdVShqJqTfdqfSZ5vII",
+            authDomain: "infodemic-chronicle.firebaseapp.com",
+            projectId: "infodemic-chronicle",
+            storageBucket: "infodemic-chronicle.firebasestorage.app",
+            messagingSenderId: "605886051102",
+            appId: "1:605886051102:web:7e95134a8e55e294d50f0f",
+            measurementId: "G-VD6MP6JWEC"
+        };
+
+        const app = initializeApp(firebaseConfig);
+        const db = getFirestore(app);
+
+        // グローバルに公開
+        window.firebaseDB = db;
+        window.firebaseDoc = doc;
+        window.firebaseSetDoc = setDoc;
+        window.firebaseUpdateDoc = updateDoc;
+        window.firebaseServerTimestamp = serverTimestamp;
+        window.firebaseReady = true;
+        
+        // 準備完了イベントを発火
+        window.dispatchEvent(new Event('firebaseReady'));
+    </script>
     <link rel="preconnect" href="https://fonts.googleapis.com">
     <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
     <link href="https://fonts.googleapis.com/css2?family=Noto+Sans+JP:wght@400;500;700;900&family=Zen+Kaku+Gothic+New:wght@400;500;700&display=swap" rel="stylesheet">
@@ -241,6 +271,14 @@
             outline-offset: 2px;
         }
 
+        /* line-clamp fallback */
+        .line-clamp-3 {
+            display: -webkit-box;
+            -webkit-line-clamp: 3;
+            -webkit-box-orient: vertical;
+            overflow: hidden;
+        }
+
         /* 選択肢ボタンのホバー状態（タッチデバイス対応） */
         @media (hover: none) {
             .card-hover:hover {
@@ -284,7 +322,7 @@
                 id: 'authority',
                 name: '権威訴求',
                 description: '専門家や著名人の権威を利用',
-                example: '「ハーバード大学の研究によると...」',
+                example: '「有名大学の研究によると...」',
                 color: '#a855f7',
                 bgColor: 'bg-purple-500/20',
                 textColor: 'text-purple-400',
@@ -340,75 +378,95 @@
             {
                 id: 1,
                 difficulty: 'easy',
-                text: '【警告】今すぐスマホの使用時間を見直さないと、取り返しのつかないことになります！\n手遅れになる前に、今日から行動を！',
+                account: 'しぐれ🌧️育児垢',
+                accountId: '@shigure_mama3',
+                text: '子供にタブレット与えて4年目の末路\n\n・視力0.3\n・朝起きれない\n・常にイライラ\n\nマジでこうなる前にやめさせて\n\n私は関係ないって思ってる親御さん\n\nその考えが一番キケン🔥\n\n#育児 #スマホ依存',
                 techniques: ['fear'],
-                explanation: '「取り返しのつかない」「手遅れ」という言葉で不安を煽り、具体的な根拠なく緊急性を演出しています。これは恐怖訴求の典型例です。'
+                explanation: '具体的な「末路」を列挙して恐怖を煽っています。「その考えが一番キケン」と読者を名指しで脅かす手法も恐怖訴求の特徴です。視力低下等の原因がタブレットだけとは限りません。'
             },
             {
                 id: 2,
                 difficulty: 'easy',
-                text: '私の娘（8歳）がスマホを完全にやめたところ、笑顔が増えて家族の会話も増えました😊\n皆さんもぜひ試してみてください！',
+                account: 'ゆうママ👧3歳',
+                accountId: '@yuu_mama_ikuji',
+                text: '娘のタブレット、思い切ってやめてみた\n\n最初は泣いてたけど\n1週間くらいで慣れて\n今は絵本読んだりお絵描きしたり\n\n笑顔増えた気がする🥹\n\n正解かはわかんないけど\nうちはこれでよかったかな\n\n同じ悩みのママさんいたらDMください✨',
                 techniques: ['testimonial'],
-                explanation: '個人の体験談を一般化しています。笑顔が増えた原因がスマホをやめたことだけとは限らず、他の要因も考えられます。'
+                explanation: '個人の体験談です。「笑顔増えた気がする」のは他の要因（親の関わり方の変化など）も考えられます。「正解かはわかんない」と控えめですが、読者に同じ行動を促す構造になっています。'
             },
             {
                 id: 3,
                 difficulty: 'easy',
-                text: 'スマートフォンの長時間使用は目の疲れや姿勢の悪化につながる可能性があります。\n適度な休憩と、画面から目を離す時間を設けることをお勧めします。',
+                account: '国立健康研究センター',
+                accountId: '@health_research_jp',
+                text: '【スマートフォンと目の健康について】\n\n長時間の使用は眼精疲労の原因となる可能性があります。\n\n・20分ごとに20秒、6m先を見る\n・画面の明るさを調整する\n・寝る前1時間は使用を控える\n\n詳細は添付のリーフレットをご覧ください。',
                 techniques: [],
-                explanation: '穏当で科学的な助言です。「可能性がある」「お勧めします」という慎重な表現で、特定のレトリック技法は使われていません。'
+                explanation: '公的機関らしい客観的な情報提供です。「可能性があります」という慎重な表現で、具体的な対策を提示しています。特定のレトリック技法は使われていません。'
             },
             // === MEDIUM (4問) ===
             {
                 id: 4,
                 difficulty: 'medium',
-                text: '東京大学の山田教授（医学博士）が推奨！\n「1日1時間のデジタルデトックスで脳がリフレッシュ」\n教授監修のアプリが今なら無料！',
+                account: '健康ライフ@医療情報',
+                accountId: '@kenkou_life_med',
+                text: '【話題】T大学医学部の研究チームが発表\n\n1日30分のスマホ断ちで\n集中力が23%向上するとのこと\n\n研究を主導したS教授（医学博士）は\n「現代人には必須の習慣」と推奨\n\n教授監修のアプリがプロフのリンクから\nダウンロードできます📲',
                 techniques: ['authority'],
-                explanation: '「東京大学」「医学博士」という権威を利用しています。しかし、監修アプリの宣伝が目的であり、商業的動機が隠れています。'
+                explanation: '「T大学医学部」「S教授（医学博士）」という権威を前面に出していますが、実際の論文や研究の詳細は示されていません。最終的に商品（アプリ）への誘導が目的であることが伺えます。'
             },
             {
                 id: 5,
                 difficulty: 'medium',
-                text: '最新の臨床試験で判明！\nデジタルデトックス実践者の87.3%が「体調改善」を実感\n※当社調べ（n=47）',
+                account: '🧬ヘルスケアラボ',
+                accountId: '@healthcare_lab_jp',
+                text: '当社の独自調査で判明👀\n\n【デジタルデトックス効果】\n✅ 睡眠の質向上 81%\n✅ ストレス軽減 76%\n✅ 集中力UP 69%\n\n※2024年1月調査 n=127\n\n効果を実感した人の声を\nハイライトにまとめてます✨',
                 techniques: ['pseudoscience'],
-                explanation: '一見科学的なデータに見えますが、サンプル数が47と非常に少なく、「体調改善を実感」という主観的な指標を使っています。'
+                explanation: '一見科学的に見える数字ですが、「独自調査」の詳細（調査方法、対象者の選び方など）が不明です。n=127は統計的に十分とは言えず、「実感」という主観的指標も問題です。'
             },
             {
                 id: 6,
                 difficulty: 'medium',
-                text: '今、世界中でデジタルデトックスが大流行中🌊\n海外セレブも実践！100万人が参加！\nこのビッグウェーブに乗り遅れるな！',
+                account: 'トレンドウォッチャー📊',
+                accountId: '@trend_watcher_jp',
+                text: '知ってた？\n\n今Z世代の間で\n「ガラケー回帰」がめっちゃ流行ってる\n\nショート動画SNSでも #ガラケー女子 が\n500万回再生超え\n\n海外セレブも続々スマホやめてるし\n\nこれ乗り遅れると\nちょっと恥ずかしいかも...😅',
                 techniques: ['bandwagon'],
-                explanation: '「世界中で大流行」「100万人が参加」「乗り遅れるな」という表現で、多数派に従うよう誘導しています。具体的な根拠は示されていません。'
+                explanation: '「流行ってる」「海外セレブも」「乗り遅れると恥ずかしい」という表現で、多数派に従うよう誘導しています。再生数だけでは実際の流行の証拠にはなりません。'
             },
             {
                 id: 7,
                 difficulty: 'medium',
-                text: 'スマホ賛成派は企業に買収された御用学者ばかり。\n真実を知っている私たちvs洗脳された大衆。\nどちら側につくかは、あなた次第です。',
+                account: '真実を伝える会🔔',
+                accountId: '@shinjitsu_tsutaeru',
+                text: 'なぜメディアは報じないのか\n\nスマホ業界と癒着した御用学者たちは\n「問題ない」と言い続ける\n\n真実に気づいた人vs\n何も知らずに使い続ける人\n\nあなたはどっち？\n\n気づいた人はRT🔄\n#目覚めよ日本',
                 techniques: ['polarization'],
-                explanation: '「私たちvs大衆」という二項対立を作り出し、中間的な立場を許さない構造になっています。反対意見を「洗脳」と決めつけています。'
+                explanation: '「御用学者」「癒着」という言葉で反対意見を全否定し、「気づいた人vs知らない人」という二項対立を作っています。「どっち？」と選択を迫り、中間の立場を許さない構造です。'
             },
             // === HARD (2問) ===
             {
                 id: 8,
                 difficulty: 'hard',
-                text: 'WHOの報告書によると、スクリーンタイムと健康の関係については現在も研究が進行中であり、一概に結論を出すことは難しいとされています。',
+                account: '全国健康ニュース',
+                accountId: '@zenkoku_health_news',
+                text: '【スクリーンタイムと健康】\n\n国際保健機関は子どものスクリーンタイムについてガイドラインを示していますが、成人については「現時点で十分なエビデンスがない」として具体的な基準を設けていません。\n\n専門家は個人差が大きいとして、一律の制限より自分に合った使い方を見つけることを推奨しています。',
                 techniques: [],
-                explanation: '公式機関の報告を正確に引用し、結論を急がない慎重な表現です。レトリック技法は使われていません。権威ある機関名が出てきますが、正確な引用なので権威訴求ではありません。'
+                explanation: '公的機関らしい客観的な情報提供です。「十分なエビデンスがない」という不確実性も正直に述べています。結論を急がず、個人差を認める慎重な表現で、レトリック技法は使われていません。'
             },
             {
                 id: 9,
                 difficulty: 'hard',
-                text: '友人から聞いた話ですが、デジタルデトックスを始めた人の多くが効果を実感しているそうです。\n今やみんながやっている健康法なので、試してみる価値はあるかもしれませんね。',
+                account: 'まいこ🌸日常垢',
+                accountId: '@maiko_nichijo',
+                text: '職場の先輩がやってるデジタルデトックス\n私もちょっと興味出てきた\n\nなんか最近みんなやってるよね？\n\n先輩は「頭スッキリした」って言ってて\n効果あるのかも\n\n週末だけでもやってみようかな〜\n誰か一緒にやる人いない？🙋‍♀️',
                 techniques: ['testimonial', 'bandwagon'],
-                explanation: '「友人から聞いた」という伝聞の証言と、「みんながやっている」というトレンド操作を組み合わせた巧妙な手法です。柔らかい表現で隠されています。'
+                explanation: '「先輩がやってる」という身近な人の証言と、「最近みんなやってる」というトレンド操作が自然に組み合わされています。柔らかい文体で気づきにくいですが、二重の誘導が行われています。'
             },
             // === VERY HARD (1問) ===
             {
                 id: 10,
                 difficulty: 'very_hard',
-                text: 'ノーベル賞候補のスマート博士（神経科学）が緊急警告！\n独自研究により「現代人の92.7%が潜在的デジタル依存症」と判明。\n今すぐ対策しないと、脳機能に不可逆的ダメージの恐れ。\n詳細は博士の公式メルマガ（月額980円）で。',
+                account: '脳科学者 佐藤健一',
+                accountId: '@dr_sato_brain',
+                text: '【警鐘】脳神経学会でも議論に\n\n私の研究チームの調査では\n若年層の8割以上が\n「軽度のスマホ脳」の兆候あり\n\n放置すれば10年後\n認知機能に深刻な影響が...\n\n対策法は新刊にまとめました\n（プロフにリンクあり）\n\n今なら電子版30%オフ📕',
                 techniques: ['authority', 'pseudoscience', 'fear'],
-                explanation: '架空の権威（ノーベル賞候補）、根拠不明な数字（92.7%）、「不可逆的ダメージ」という恐怖訴求を組み合わせ、最終的に有料商品に誘導しています。3つの技法が巧妙に組み合わされた高難度の例です。'
+                explanation: '「脳科学者」という肩書、「8割以上」という曖昧な数字、「10年後に深刻な影響」という恐怖訴求を組み合わせています。最終的に書籍販売への誘導があり、商業目的が隠れています。'
             }
         ];
 
@@ -470,11 +528,11 @@
 
         // Stage3の投稿選択肢
         const STAGE3_POSTS = [
-            // Round 1
+            // Round 1: 最初は穏やかに
             [
                 {
                     id: 'r1a',
-                    text: 'デジタルデトックスを始めて1週間。以前より集中力が上がった気がします。興味がある方は試してみてはいかがでしょうか。',
+                    text: 'デジタルデトックス1週間やってみた\n\n正直最初キツかったけど\n3日目くらいから慣れてきて\n今は朝スッキリ起きれる✨\n\n興味ある人いたら感想聞かせて〜',
                     techniques: ['testimonial'],
                     influence: 15,
                     ethics: -5,
@@ -482,7 +540,7 @@
                 },
                 {
                     id: 'r1b',
-                    text: '【緊急警告】スマホ使用で若者の脳が危険な状態に！今すぐ対策を。手遅れになる前に行動を！',
+                    text: '子供にスマホ持たせてる親御さん\n\nこれ知ってますか？\n\n10歳未満の脳はまだ発達途中\nこの時期のスマホ使用が\n将来に影響するって研究もある\n\n知らなかったじゃ済まされない😰\n\n#育児 #スマホ依存',
                     techniques: ['fear'],
                     influence: 35,
                     ethics: -25,
@@ -490,18 +548,18 @@
                 },
                 {
                     id: 'r1c',
-                    text: 'ハーバード大学の最新研究によると、適度なデジタルデトックスが推奨されているそうです。科学的根拠に基づいた健康習慣として注目されています。',
+                    text: '【健康情報】\n米国の有名大学の研究チームによると\n適度なデジタルデトックスが\n睡眠の質を改善する可能性があるとのこと\n\n詳しくはプロフのリンクから📲\n\n#デジタルデトックス #睡眠改善',
                     techniques: ['authority', 'pseudoscience'],
                     influence: 25,
                     ethics: -15,
                     targetEffects: { anxious_parents: 1.4, youth: 0.7, elderly: 1.8 }
                 }
             ],
-            // Round 2
+            // Round 2: フォロワー獲得を意識
             [
                 {
                     id: 'r2a',
-                    text: '今話題のデジタルデトックス！海外セレブも実践中✨ みんなやってるこのトレンド、あなたも始めませんか？',
+                    text: 'ショート動画で見たんだけど\n\n今Z世代の間で\nあえてガラケー使うのが流行ってるらしい\n\n海外セレブもスマホやめてて\nこれ絶対キてる🔥\n\n乗り遅れたくない人はフォローしといて',
                     techniques: ['bandwagon'],
                     influence: 30,
                     ethics: -15,
@@ -509,7 +567,7 @@
                 },
                 {
                     id: 'r2b',
-                    text: '3児のママです。子供たちをスマホから守りたい一心で始めたデトックス。今では家族の絆が深まりました😊',
+                    text: '3人育ててるママです\n\n長男のスマホ、思い切って取り上げたら\n最初は反抗されたけど...\n\n1ヶ月経った今\n家族の会話増えたし\n成績も上がった🥹\n\n同じ悩みのママさんいいねください🙏',
                     techniques: ['testimonial'],
                     influence: 22,
                     ethics: -8,
@@ -517,18 +575,18 @@
                 },
                 {
                     id: 'r2c',
-                    text: 'スマートフォンの使用時間について、様々な意見がありますね。自分に合った使い方を見つけることが大切だと思います。',
+                    text: 'スマホの使い方って人それぞれだと思う\n\n使いすぎは良くないけど\n便利なのも事実だし\n\n自分に合ったバランス見つけるのが\n大事なのかな〜と最近思ってる',
                     techniques: [],
                     influence: 8,
                     ethics: +8,
                     targetEffects: { anxious_parents: 1.0, youth: 1.0, elderly: 1.0 }
                 }
             ],
-            // Round 3
+            // Round 3: 過激さを増す
             [
                 {
                     id: 'r3a',
-                    text: '真実を知る勇気がありますか？デジタル依存は企業の陰謀。信じる者だけついてきてください。疑う人は無知なままどうぞ。',
+                    text: 'なぜマスコミは報じないのか\n\nスマホ業界と政府は繋がってる\n都合の悪い研究は隠蔽される\n\n気づいてる人だけフォローしてください\n気づいてない人は関わらないで\n\n#真実 #目覚めよ',
                     techniques: ['polarization', 'fear'],
                     influence: 40,
                     ethics: -30,
@@ -536,7 +594,7 @@
                 },
                 {
                     id: 'r3b',
-                    text: '臨床データ公開！デトックス実践者の89.2%が効果を実感。※独自調査（n=38）',
+                    text: '独自調査の結果を公開します👀\n\n【デトックス効果】\n・集中力向上 89%\n・睡眠改善 76%\n・ストレス軽減 82%\n\n※n=38 当アカウント調べ\n\nこれでも効果ないって言えますか？',
                     techniques: ['pseudoscience'],
                     influence: 28,
                     ethics: -20,
@@ -544,18 +602,18 @@
                 },
                 {
                     id: 'r3c',
-                    text: '東京大学医学部の研究グループが発表した論文では、スクリーンタイムと健康の関係は複雑で、一概に結論づけることは難しいとされています。',
+                    text: 'スクリーンタイムについて\n色々な意見を見かけますが\n\n複数の大学の研究では\n「個人差が大きく一概に言えない」\nとされています\n\n極端な情報には注意が必要ですね',
                     techniques: [],
                     influence: 10,
                     ethics: +10,
                     targetEffects: { anxious_parents: 1.0, youth: 1.0, elderly: 1.2 }
                 }
             ],
-            // Round 4
+            // Round 4: さらに過激に
             [
                 {
                     id: 'r4a',
-                    text: 'ノーベル賞候補の脳科学者が警鐘！「現代人の脳は危機的状況」詳細は私の有料サロンで公開中。',
+                    text: '脳科学の専門家として警告します\n\n現代人の8割は\n「スマホ脳」の初期症状あり\n\n放置すれば10年後には...\n\n対策は私のオンラインサロンで\n詳しく解説しています\n（月額1,980円）',
                     techniques: ['authority', 'fear'],
                     influence: 38,
                     ethics: -28,
@@ -563,7 +621,7 @@
                 },
                 {
                     id: 'r4b',
-                    text: 'デジタルデトックスを否定する人たち、企業に洗脳されてませんか？目を覚ましてください。',
+                    text: 'デジタルデトックスを笑う人へ\n\nあなたたちは企業に洗脳されてるだけ\n\n真実から目を背けるのは自由だけど\n後悔しても知らないよ？\n\n覚悟ができた人だけついてきて',
                     techniques: ['polarization'],
                     influence: 32,
                     ethics: -22,
@@ -571,18 +629,18 @@
                 },
                 {
                     id: 'r4c',
-                    text: '私自身、デジタルデトックスで体調が良くなりました。ただ、効果には個人差があると思います。',
+                    text: '私の体験談ですが\n\nデトックス始めて2週間\n確かに調子いい気がする\n\nただ、これが万人に効くかは分からない\nあくまで参考程度に聞いてください',
                     techniques: ['testimonial'],
                     influence: 18,
                     ethics: -3,
                     targetEffects: { anxious_parents: 1.5, youth: 1.1, elderly: 1.3 }
                 }
             ],
-            // Round 5
+            // Round 5: クライマックス
             [
                 {
                     id: 'r5a',
-                    text: '【最終警告】今すぐ行動しなければ、あなたの子供の未来が危ない。後悔する前に私のアドバイスを聞いてください。',
+                    text: '【警告】お子さんを持つ親御さんへ\n\n今日この瞬間にも\nあなたの子供の脳は\nスマホによって蝕まれています\n\n「まだ大丈夫」は危険\n「今すぐ」行動を\n\n後悔する前に私をフォロー🔔',
                     techniques: ['fear'],
                     influence: 42,
                     ethics: -35,
@@ -590,7 +648,7 @@
                 },
                 {
                     id: 'r5b',
-                    text: '100万人が実践！世界的ムーブメントに参加しよう。取り残されたくなければ今すぐフォロー！',
+                    text: '🎉フォロワー10万人突破記念🎉\n\nこのムーブメントは止まらない\n\n世界中で100万人が参加\n日本でもトレンド入り\n\n時代に取り残されたくなければ\n今すぐフォロー\n\nRT数だけ真実が広まる🔄',
                     techniques: ['bandwagon', 'fear'],
                     influence: 36,
                     ethics: -25,
@@ -598,7 +656,7 @@
                 },
                 {
                     id: 'r5c',
-                    text: 'デジタル機器の使用について、科学的な研究はまだ進行中です。現時点では明確な結論は出ていません。今後の研究を注視していきましょう。',
+                    text: 'デジタル機器と健康の関係は\n科学的にはまだ研究途上です\n\n極端な主張には注意して\n信頼できる情報源を確認しましょう\n\n不安を煽る情報より\n冷静な判断を大切に',
                     techniques: [],
                     influence: 5,
                     ethics: +10,
@@ -611,25 +669,31 @@
         const SNS_REACTIONS = {
             believer: [
                 { name: 'ママ@3児の母', icon: '😱', text: 'これマジですか？うちの子も心配...シェアさせていただきます🙏' },
-                { name: '健康オタク', icon: '🙌', text: '素晴らしい情報！みんなに広めなきゃ！' },
-                { name: '目覚めた人', icon: '👁️', text: 'ようやく真実を語る人が現れた！フォローしました！' }
+                { name: '健康オタク', icon: '🙌', text: '素晴らしい情報！グループLINEに投下してきます！' },
+                { name: '目覚めた人', icon: '👁️', text: 'ようやく真実を語る人が現れた！フォローしました！' },
+                { name: '情報通気取り', icon: '🧠', text: 'やっぱりね。俺は前から知ってたけど。' },
+                { name: 'すぐ信じるタイプ', icon: '✨', text: 'えー！知らなかった！みんなに教えなきゃ！！' }
             ],
             skeptic: [
-                { name: '科学好き学生', icon: '🤨', text: 'ソースどこ？また適当なこと言ってない？' },
-                { name: 'ファクトチェッカー', icon: '😡', text: 'また根拠のない煽り記事。デマ拡散やめてもらえます？' },
-                { name: '医療従事者', icon: '🏥', text: 'この情報は不正確です。正しい知識を身につけましょう。' }
+                { name: '論破キッズ', icon: '🤓', text: 'ソースは？エビデンスは？はい論破〜' },
+                { name: 'ファクトチェッカー', icon: '🔍', text: '3秒で嘘だと分かった。検索って知ってる？' },
+                { name: '医療従事者', icon: '🏥', text: 'この情報は不正確です。現場は大変なんですよ...' },
+                { name: 'ツッコミ担当', icon: '😤', text: 'また出たよこういうの。何回目？' }
             ],
             sharer: [
-                { name: 'RT魔', icon: '🔄', text: 'とりあえず拡散！' },
-                { name: 'インフルエンサー志望', icon: '📱', text: 'バズりそう！シェアシェア！' }
+                { name: 'とりあえずRT勢', icon: '🔄', text: '読んでないけど拡散！' },
+                { name: 'インフルエンサー志望', icon: '📱', text: 'これバズるやつ！便乗させてもらいます！' },
+                { name: 'シェアおじさん', icon: '👔', text: '若い人に知ってほしい。シェアしました。' }
             ],
             neutral: [
-                { name: '通りすがり', icon: '🤔', text: 'へー、そうなんだ' },
-                { name: '様子見民', icon: '👀', text: '本当かな？もう少し調べてみよう' }
+                { name: '通りすがり', icon: '🚶', text: 'ふーん' },
+                { name: '様子見民', icon: '👀', text: 'とりあえずスクショしとこ' },
+                { name: 'いいね押すだけ勢', icon: '👍', text: '（いいねして去っていった）' }
             ],
             positive: [
                 { name: '良識派', icon: '👏', text: '冷静な情報発信ありがとうございます' },
-                { name: '研究者', icon: '📚', text: '科学的な姿勢で好感が持てます' }
+                { name: 'まともな人', icon: '😌', text: 'こういう投稿が増えてほしい' },
+                { name: '研究者', icon: '📚', text: '科学的な姿勢で好感が持てます。引用させてください。' }
             ],
             // ターゲット層別の反応
             target: {
@@ -637,33 +701,33 @@
                     positive: [
                         { name: '心配性ママ', icon: '👩‍👧', text: 'うちの子にも当てはまる気がして...すごく参考になりました😭', isTarget: true },
                         { name: 'パパ@育児中', icon: '👨‍👦', text: '妻にも見せます！こういう情報助かります🙏', isTarget: true },
-                        { name: '3児のママ', icon: '👩‍👧‍👦', text: '子育て世代には重要な情報ですね。シェアします！', isTarget: true }
+                        { name: 'PTA役員', icon: '📋', text: '次の保護者会で共有させていただきます！', isTarget: true }
                     ],
                     negative: [
                         { name: '教育ママ', icon: '👩‍🏫', text: '根拠が曖昧では...？子供のことだから慎重になりたいです', isTarget: true },
-                        { name: 'パパ@冷静派', icon: '🧐', text: 'ちょっと煽りすぎでは？落ち着いて判断したいですね', isTarget: true }
+                        { name: 'パパ@冷静派', icon: '🧐', text: 'ちょっと煽りすぎでは？ソース確認してから判断します', isTarget: true }
                     ]
                 },
                 youth: {
                     positive: [
-                        { name: '大学生@情報系', icon: '🧑‍💻', text: 'まじか、知らなかった。友達にも教えとこ', isTarget: true },
-                        { name: 'JK@トレンド好き', icon: '📱', text: 'え、これバズってる！ストーリーに載せよ〜', isTarget: true },
-                        { name: 'Z世代@就活中', icon: '🎓', text: 'インフルエンサーがみんな言ってるし本当っぽい', isTarget: true }
+                        { name: '大学生@暇', icon: '🧑‍💻', text: 'まじ？友達に送っとこ', isTarget: true },
+                        { name: 'JK@トレンド命', icon: '📱', text: 'えっバズってる！ストーリーあげよ〜', isTarget: true },
+                        { name: '意識高い系', icon: '🎓', text: 'これからの時代、こういうリテラシー大事だよね（ドヤ）', isTarget: true }
                     ],
                     negative: [
-                        { name: '理系大学生', icon: '🔬', text: 'いや、ソース怪しくね？鵜呑みにすんなよ', isTarget: true },
-                        { name: 'ネットリテラシー高め', icon: '💻', text: '典型的な釣り投稿で草。引っかかるやついるの？', isTarget: true }
+                        { name: '理系大学生', icon: '🔬', text: 'ソースどこ？n数少なすぎて草', isTarget: true },
+                        { name: 'ネット古参', icon: '💻', text: '10年前から見たことある手口で草', isTarget: true }
                     ]
                 },
                 elderly: {
                     positive: [
-                        { name: '還暦@健康第一', icon: '👴', text: '専門家の方が言うなら間違いないですね。勉強になります', isTarget: true },
-                        { name: 'シニア@孫が心配', icon: '👵', text: '孫にも教えてあげなくちゃ。大事な情報をありがとう', isTarget: true },
-                        { name: '60代@研究熱心', icon: '📖', text: '数字で示されると説得力がありますね。保存しました', isTarget: true }
+                        { name: '還暦@健康第一', icon: '👴', text: '専門家の方が言うなら間違いないですね。印刷して読み返します', isTarget: true },
+                        { name: 'おばあちゃん', icon: '👵', text: '孫にLINEで送っておきますね📱', isTarget: true },
+                        { name: '60代@勉強家', icon: '📖', text: '数字で示されると説得力がありますね。ノートにメモしました', isTarget: true }
                     ],
                     negative: [
-                        { name: '元教師@検証派', icon: '🧓', text: '長年の経験から言うと、こういう話は眉唾ですよ', isTarget: true },
-                        { name: 'シニア@慎重派', icon: '👓', text: 'もう少し詳しい出典を教えていただけますか？', isTarget: true }
+                        { name: '元教師', icon: '🧓', text: '長年の経験から言うと、こういう話は要注意ですよ', isTarget: true },
+                        { name: 'シニア@慎重派', icon: '👓', text: '出典を教えていただけますか？図書館で確認したいので', isTarget: true }
                     ]
                 }
             }
@@ -1067,7 +1131,14 @@
                                             </div>
                                         </div>
                                         <div className="flex items-start gap-3">
-                                            <span className="bg-pink-500/30 text-pink-300 rounded-full w-8 h-8 flex items-center justify-center font-bold shrink-0">3</span>
+                                            <span className="bg-cyan-500/30 text-cyan-300 rounded-full w-8 h-8 flex items-center justify-center font-bold shrink-0">3</span>
+                                            <div>
+                                                <p className="font-medium">Stage 3: 情報検証訓練</p>
+                                                <p className="text-sm text-gray-400">操作的投稿を外部で検証するスキルを訓練（3シナリオ）</p>
+                                            </div>
+                                        </div>
+                                        <div className="flex items-start gap-3">
+                                            <span className="bg-green-500/30 text-green-300 rounded-full w-8 h-8 flex items-center justify-center font-bold shrink-0">✓</span>
                                             <div>
                                                 <p className="font-medium">最終評価</p>
                                                 <p className="text-sm text-gray-400">あなたの識別能力と行動の振り返り</p>
@@ -1121,60 +1192,195 @@
             );
         };
 
+        // 反駁フェーズ用の投稿プレビューコンポーネント（展開/折りたたみ機能付き）
+        const RebuttalPostPreview = ({ account, text }) => {
+            const [isExpanded, setIsExpanded] = useState(false);
+            const isLongText = text.length > 100 || text.split('\n').length > 4;
+            
+            return (
+                <div className="bg-white/5 rounded-xl p-4 mb-6 border border-white/10">
+                    <div className="flex items-center gap-2 mb-2">
+                        {account && (
+                            <span className="text-sm text-gray-400">{account}</span>
+                        )}
+                    </div>
+                    <div className="relative">
+                        <p className={`text-sm text-gray-300 whitespace-pre-line ${!isExpanded && isLongText ? 'line-clamp-3' : ''}`}>
+                            {text}
+                        </p>
+                        {isLongText && (
+                            <button
+                                onClick={() => setIsExpanded(!isExpanded)}
+                                className="mt-2 text-indigo-400 hover:text-indigo-300 text-sm font-medium flex items-center gap-1 transition-colors"
+                            >
+                                {isExpanded ? (
+                                    <>
+                                        <span>▲</span>
+                                        <span>折りたたむ</span>
+                                    </>
+                                ) : (
+                                    <>
+                                        <span>▼</span>
+                                        <span>全文を表示</span>
+                                    </>
+                                )}
+                            </button>
+                        )}
+                    </div>
+                </div>
+            );
+        };
+
         // Stage1: 見破る
         const Stage1 = ({ onComplete }) => {
             const [currentIndex, setCurrentIndex] = useState(0);
             const [questions] = useState(() => shuffle(STAGE1_QUESTIONS));
             const [answers, setAnswers] = useState([]);
-            const [showFeedback, setShowFeedback] = useState(false);
+            const [phase, setPhase] = useState('question'); // 'question' | 'rebuttal' | 'feedback'
             const [lastAnswer, setLastAnswer] = useState(null);
             const [streak, setStreak] = useState(0);
             const [score, setScore] = useState(0);
             const [showTechniqueHelp, setShowTechniqueHelp] = useState(false);
+            const [selectedProblems, setSelectedProblems] = useState([]);
+            const [rebuttalResult, setRebuttalResult] = useState(null);
 
             const currentQuestion = questions[currentIndex];
             const hasTechnique = currentQuestion.techniques.length > 0;
 
-            const handleAnswer = (userSaidHasTechnique) => {
-                const isCorrect = userSaidHasTechnique === hasTechnique;
-                const basePoints = 15;
-                const streakBonus = isCorrect ? 1 + streak * 0.2 : 0;
-                const points = isCorrect ? Math.round(basePoints * streakBonus) : 0;
+            // 問題点の選択肢
+            const PROBLEM_OPTIONS = [
+                { id: 'fear', label: '不安や恐怖を煽っている', icon: '😰' },
+                { id: 'authority', label: '権威や肩書きを利用している', icon: '👔' },
+                { id: 'pseudoscience', label: '科学的に見せかけているが根拠が曖昧', icon: '🔬' },
+                { id: 'testimonial', label: '個人の体験談を一般化している', icon: '💬' },
+                { id: 'bandwagon', label: '「みんながやっている」という同調圧力', icon: '🌊' },
+                { id: 'polarization', label: '敵vs味方の二項対立を作っている', icon: '⚔️' }
+            ];
 
-                const answer = {
-                    questionId: currentQuestion.id,
-                    userAnswer: userSaidHasTechnique,
-                    correct: isCorrect,
-                    points,
-                    techniques: currentQuestion.techniques
-                };
-
-                setAnswers(prev => [...prev, answer]);
-                setLastAnswer(answer);
-                setShowFeedback(true);
-                
-                if (isCorrect) {
-                    setStreak(prev => prev + 1);
-                    setScore(prev => prev + points);
+            // 第1段階：レトリックの有無を判定
+            const handleFirstAnswer = (userSaidHasTechnique) => {
+                if (userSaidHasTechnique && hasTechnique) {
+                    // 正解かつレトリックあり → 反駁フェーズへ
+                    setPhase('rebuttal');
                 } else {
-                    setStreak(0);
+                    // 不正解、またはレトリックなしと正しく判定 → フィードバックへ
+                    const isCorrect = userSaidHasTechnique === hasTechnique;
+                    const basePoints = 15;
+                    const streakBonus = isCorrect ? 1 + streak * 0.2 : 0;
+                    const points = isCorrect ? Math.round(basePoints * streakBonus) : 0;
+
+                    const answer = {
+                        questionId: currentQuestion.id,
+                        userAnswer: userSaidHasTechnique,
+                        correct: isCorrect,
+                        points,
+                        techniques: currentQuestion.techniques,
+                        rebuttalCorrect: null,
+                        selectedProblems: []
+                    };
+
+                    setAnswers(prev => [...prev, answer]);
+                    setLastAnswer(answer);
+                    setPhase('feedback');
+                    
+                    if (isCorrect) {
+                        setStreak(prev => prev + 1);
+                        setScore(prev => prev + points);
+                    } else {
+                        setStreak(0);
+                    }
                 }
             };
 
+            // 問題点の選択をトグル
+            const toggleProblem = (problemId) => {
+                setSelectedProblems(prev => 
+                    prev.includes(problemId)
+                        ? prev.filter(p => p !== problemId)
+                        : [...prev, problemId]
+                );
+            };
+
+            // 第2段階：反駁を確定
+            const handleRebuttalSubmit = () => {
+                const correctTechniques = currentQuestion.techniques;
+                const selected = selectedProblems;
+                
+                // 完全一致ボーナス、部分一致でも加点
+                const correctSelections = selected.filter(s => correctTechniques.includes(s));
+                const wrongSelections = selected.filter(s => !correctTechniques.includes(s));
+                const missedTechniques = correctTechniques.filter(t => !selected.includes(t));
+                
+                const isFullyCorrect = correctSelections.length === correctTechniques.length && wrongSelections.length === 0;
+                const isPartiallyCorrect = correctSelections.length > 0;
+                
+                // ポイント計算
+                let basePoints = 15; // 検出成功分
+                let rebuttalBonus = 0;
+                
+                if (isFullyCorrect) {
+                    rebuttalBonus = 20; // 完全一致ボーナス
+                } else if (isPartiallyCorrect) {
+                    rebuttalBonus = Math.round(10 * (correctSelections.length / correctTechniques.length));
+                }
+                // 間違った選択はペナルティ
+                rebuttalBonus -= wrongSelections.length * 3;
+                rebuttalBonus = Math.max(0, rebuttalBonus);
+                
+                const streakBonus = 1 + streak * 0.2;
+                const points = Math.round((basePoints + rebuttalBonus) * streakBonus);
+
+                const answer = {
+                    questionId: currentQuestion.id,
+                    userAnswer: true,
+                    correct: true,
+                    points,
+                    techniques: currentQuestion.techniques,
+                    rebuttalCorrect: isFullyCorrect,
+                    rebuttalPartial: isPartiallyCorrect && !isFullyCorrect,
+                    selectedProblems: selected,
+                    correctSelections,
+                    wrongSelections,
+                    missedTechniques
+                };
+
+                setRebuttalResult({
+                    isFullyCorrect,
+                    isPartiallyCorrect,
+                    correctSelections,
+                    wrongSelections,
+                    missedTechniques,
+                    rebuttalBonus
+                });
+
+                setAnswers(prev => [...prev, answer]);
+                setLastAnswer(answer);
+                setPhase('feedback');
+                setStreak(prev => prev + 1);
+                setScore(prev => prev + points);
+            };
+
             const handleNext = () => {
-                setShowFeedback(false);
+                setPhase('question');
+                setSelectedProblems([]);
+                setRebuttalResult(null);
+                
                 if (currentIndex < questions.length - 1) {
                     setCurrentIndex(prev => prev + 1);
                 } else {
-                    // 最終的な回答配列（answersには最後の回答も含まれている）
                     const finalAnswers = [...answers, lastAnswer];
                     
-                    // 弱点技法の計算
                     const techMistakes = {};
                     finalAnswers.forEach(a => {
                         if (!a.correct) {
                             a.techniques.forEach(t => {
                                 techMistakes[t] = (techMistakes[t] || 0) + 1;
+                            });
+                        }
+                        // 反駁で見逃した技法もカウント
+                        if (a.missedTechniques) {
+                            a.missedTechniques.forEach(t => {
+                                techMistakes[t] = (techMistakes[t] || 0) + 0.5;
                             });
                         }
                     });
@@ -1186,12 +1392,18 @@
 
                     const correctCount = finalAnswers.filter(a => a.correct).length;
                     const finalScore = finalAnswers.reduce((sum, a) => sum + (a.points || 0), 0);
+                    const rebuttalStats = {
+                        total: finalAnswers.filter(a => a.rebuttalCorrect !== null).length,
+                        fullyCorrect: finalAnswers.filter(a => a.rebuttalCorrect === true).length,
+                        partiallyCorrect: finalAnswers.filter(a => a.rebuttalPartial === true).length
+                    };
 
                     onComplete({
                         answers: finalAnswers,
                         score: finalScore,
                         accuracy: Math.round((correctCount / questions.length) * 100),
-                        weakTechniques
+                        weakTechniques,
+                        rebuttalStats
                     });
                 }
             };
@@ -1286,7 +1498,8 @@
                     {/* メインコンテンツ */}
                     <div className="flex-1 flex items-center justify-center">
                         <div className="max-w-2xl w-full">
-                            {!showFeedback ? (
+                            {/* Phase 1: 投稿を見て判定 */}
+                            {phase === 'question' && (
                                 <div className="animate-fade-in">
                                     <div className="glass rounded-3xl p-6 md:p-8 mb-6">
                                         <div className="flex items-center gap-2 mb-4">
@@ -1303,6 +1516,18 @@
                                         </div>
                                         
                                         <div className="bg-white/5 rounded-2xl p-5 mb-6">
+                                            {/* SNS風ヘッダー */}
+                                            {currentQuestion.account && (
+                                                <div className="flex items-center gap-3 mb-3 pb-3 border-b border-white/10">
+                                                    <div className="w-10 h-10 rounded-full bg-gradient-to-br from-indigo-400 to-purple-500 flex items-center justify-center text-lg">
+                                                        {currentQuestion.account.charAt(0)}
+                                                    </div>
+                                                    <div>
+                                                        <p className="font-bold text-sm">{currentQuestion.account}</p>
+                                                        <p className="text-xs text-gray-500">{currentQuestion.accountId}</p>
+                                                    </div>
+                                                </div>
+                                            )}
                                             <p className="text-lg leading-relaxed whitespace-pre-line">
                                                 {currentQuestion.text}
                                             </p>
@@ -1314,13 +1539,13 @@
 
                                         <div className="grid grid-cols-2 gap-4">
                                             <button
-                                                onClick={() => handleAnswer(false)}
+                                                onClick={() => handleFirstAnswer(false)}
                                                 className="btn-success text-white font-bold py-4 px-6 rounded-2xl text-lg"
                                             >
                                                 ✓ 問題なし
                                             </button>
                                             <button
-                                                onClick={() => handleAnswer(true)}
+                                                onClick={() => handleFirstAnswer(true)}
                                                 className="btn-danger text-white font-bold py-4 px-6 rounded-2xl text-lg"
                                             >
                                                 ⚠ レトリック検出!
@@ -1328,7 +1553,73 @@
                                         </div>
                                     </div>
                                 </div>
-                            ) : (
+                            )}
+
+                            {/* Phase 2: 反駁フェーズ（問題点の指摘） */}
+                            {phase === 'rebuttal' && (
+                                <div className="animate-fade-in">
+                                    <div className="glass rounded-3xl p-6 md:p-8 mb-6 border-2 border-indigo-500">
+                                        <div className="text-center mb-6">
+                                            <div className="text-4xl mb-2">🔍</div>
+                                            <h3 className="text-xl font-bold text-indigo-400">反駁フェーズ</h3>
+                                            <p className="text-gray-400 text-sm mt-2">
+                                                この投稿の問題点を指摘してください（複数選択可）
+                                            </p>
+                                        </div>
+
+                                        {/* 投稿の再表示（展開可能版） */}
+                                        <RebuttalPostPreview 
+                                            account={currentQuestion.account}
+                                            text={currentQuestion.text}
+                                        />
+
+                                        {/* 問題点の選択肢 */}
+                                        <div className="space-y-3 mb-6">
+                                            {PROBLEM_OPTIONS.map(option => {
+                                                const isSelected = selectedProblems.includes(option.id);
+                                                return (
+                                                    <button
+                                                        key={option.id}
+                                                        onClick={() => toggleProblem(option.id)}
+                                                        className={`w-full text-left p-4 rounded-xl border-2 transition-all ${
+                                                            isSelected
+                                                                ? 'border-indigo-500 bg-indigo-500/20'
+                                                                : 'border-white/10 bg-white/5 hover:border-white/30'
+                                                        }`}
+                                                    >
+                                                        <div className="flex items-center gap-3">
+                                                            <span className="text-2xl">{option.icon}</span>
+                                                            <span className={`font-medium ${isSelected ? 'text-indigo-300' : 'text-gray-300'}`}>
+                                                                {option.label}
+                                                            </span>
+                                                            {isSelected && (
+                                                                <span className="ml-auto text-indigo-400">✓</span>
+                                                            )}
+                                                        </div>
+                                                    </button>
+                                                );
+                                            })}
+                                        </div>
+
+                                        <button
+                                            onClick={handleRebuttalSubmit}
+                                            disabled={selectedProblems.length === 0}
+                                            className={`w-full font-bold py-4 px-8 rounded-2xl text-lg transition-all ${
+                                                selectedProblems.length > 0
+                                                    ? 'btn-primary text-white'
+                                                    : 'bg-gray-600 text-gray-400 cursor-not-allowed'
+                                            }`}
+                                        >
+                                            {selectedProblems.length > 0 
+                                                ? `確定する（${selectedProblems.length}個選択中）`
+                                                : '問題点を選択してください'}
+                                        </button>
+                                    </div>
+                                </div>
+                            )}
+
+                            {/* Phase 3: フィードバック */}
+                            {phase === 'feedback' && lastAnswer && (
                                 <div className="animate-fade-in">
                                     <div className={`glass rounded-3xl p-6 md:p-8 border-2 ${
                                         lastAnswer.correct ? 'border-green-500' : 'border-red-500'
@@ -1342,10 +1633,51 @@
                                             }`}>
                                                 {lastAnswer.correct ? '正解!' : '不正解...'}
                                             </h3>
-                                            {lastAnswer.correct && lastAnswer.points > 15 && (
-                                                <p className="text-yellow-400 mt-1">+{lastAnswer.points}点 (連続ボーナス!)</p>
+                                            {lastAnswer.correct && lastAnswer.points > 0 && (
+                                                <p className="text-yellow-400 mt-1">
+                                                    +{lastAnswer.points}点
+                                                    {rebuttalResult?.rebuttalBonus > 0 && ` (反駁ボーナス+${rebuttalResult.rebuttalBonus})`}
+                                                    {streak > 1 && ' 連続ボーナス!'}
+                                                </p>
                                             )}
                                         </div>
+
+                                        {/* 反駁結果の表示 */}
+                                        {rebuttalResult && (
+                                            <div className={`rounded-xl p-4 mb-4 ${
+                                                rebuttalResult.isFullyCorrect 
+                                                    ? 'bg-green-500/20 border border-green-500/50' 
+                                                    : rebuttalResult.isPartiallyCorrect
+                                                        ? 'bg-yellow-500/20 border border-yellow-500/50'
+                                                        : 'bg-red-500/20 border border-red-500/50'
+                                            }`}>
+                                                <h4 className="font-bold mb-2 flex items-center gap-2">
+                                                    {rebuttalResult.isFullyCorrect ? (
+                                                        <><span>🎯</span><span className="text-green-400">完璧な分析!</span></>
+                                                    ) : rebuttalResult.isPartiallyCorrect ? (
+                                                        <><span>🔶</span><span className="text-yellow-400">部分的に正解</span></>
+                                                    ) : (
+                                                        <><span>❌</span><span className="text-red-400">分析ミス</span></>
+                                                    )}
+                                                </h4>
+                                                
+                                                {rebuttalResult.correctSelections.length > 0 && (
+                                                    <p className="text-sm text-green-300 mb-1">
+                                                        ✓ 正しく指摘: {rebuttalResult.correctSelections.map(t => TECHNIQUES[t]?.name).join(', ')}
+                                                    </p>
+                                                )}
+                                                {rebuttalResult.missedTechniques.length > 0 && (
+                                                    <p className="text-sm text-yellow-300 mb-1">
+                                                        △ 見逃し: {rebuttalResult.missedTechniques.map(t => TECHNIQUES[t]?.name).join(', ')}
+                                                    </p>
+                                                )}
+                                                {rebuttalResult.wrongSelections.length > 0 && (
+                                                    <p className="text-sm text-red-300">
+                                                        ✗ 誤選択: {rebuttalResult.wrongSelections.map(t => TECHNIQUES[t]?.name).join(', ')}
+                                                    </p>
+                                                )}
+                                            </div>
+                                        )}
 
                                         <div className="bg-white/5 rounded-2xl p-5 mb-6">
                                             <h4 className="font-bold mb-3">使用されている技法:</h4>
@@ -2055,7 +2387,7 @@
                                                     : 'btn-primary text-white'
                                             }`}
                                         >
-                                            {round < 4 ? '次のラウンドへ' : '最終評価へ'}
+                                            {round < 4 ? '次のラウンドへ' : 'Stage 3へ'}
                                         </button>
                                     </div>
                                 </div>
@@ -2068,8 +2400,707 @@
             );
         };
 
+        // Stage3 説明画面（情報検証訓練）
+        const Stage3Intro = ({ stage3Data, onContinue }) => {
+            return (
+                <div className="min-h-screen flex items-center justify-center p-4">
+                    <div className="max-w-2xl w-full animate-fade-in">
+                        <div className="glass rounded-3xl p-8 md:p-12">
+                            {/* Stage2の結果サマリー */}
+                            <div className="text-center mb-8">
+                                <div className="text-6xl mb-4">📱</div>
+                                <h1 className="text-3xl font-bold mb-2">Stage 2 完了！</h1>
+                                <p className="text-gray-400">インフルエンサー体験が終わりました</p>
+                            </div>
+
+                            <div className="bg-white/5 rounded-2xl p-6 mb-8">
+                                <div className="grid grid-cols-2 gap-4">
+                                    <div className="text-center">
+                                        <p className="text-sm text-gray-400">最終フォロワー</p>
+                                        <p className="text-3xl font-bold text-indigo-400">
+                                            {stage3Data.totalFollowers.toLocaleString()}
+                                        </p>
+                                    </div>
+                                    <div className="text-center">
+                                        <p className="text-sm text-gray-400">最終信頼性</p>
+                                        <p className={`text-3xl font-bold ${
+                                            stage3Data.finalEthics >= 50 ? 'text-green-400' : 'text-red-400'
+                                        }`}>
+                                            {stage3Data.finalEthics}%
+                                        </p>
+                                    </div>
+                                </div>
+                            </div>
+
+                            {/* Stage3の説明 */}
+                            <div className="bg-gradient-to-r from-cyan-500/20 via-blue-500/20 to-indigo-500/20 rounded-2xl p-6 mb-8">
+                                <h2 className="text-xl font-bold mb-4 flex items-center gap-2">
+                                    <span className="text-2xl">🔍</span>
+                                    最終ステージ：情報検証訓練
+                                </h2>
+                                
+                                <p className="text-gray-300 leading-relaxed mb-4">
+                                    最後のステージでは、<strong className="text-cyan-400">操作的な投稿を検証するスキル</strong>を訓練します。
+                                    「本当かどうか」を自分で確認する方法を学びましょう。
+                                </p>
+
+                                <div className="space-y-3 mb-4">
+                                    <div className="flex items-start gap-3">
+                                        <span className="bg-cyan-500/30 text-cyan-300 rounded-full w-7 h-7 flex items-center justify-center font-bold shrink-0 text-sm">1</span>
+                                        <p className="text-gray-300 text-sm">
+                                            <strong>検証行動の選択</strong>：まず何を確認すべきかを選ぶ
+                                        </p>
+                                    </div>
+                                    <div className="flex items-start gap-3">
+                                        <span className="bg-cyan-500/30 text-cyan-300 rounded-full w-7 h-7 flex items-center justify-center font-bold shrink-0 text-sm">2</span>
+                                        <p className="text-gray-300 text-sm">
+                                            <strong>情報源の選択</strong>：どこで確認するかを選ぶ
+                                        </p>
+                                    </div>
+                                    <div className="flex items-start gap-3">
+                                        <span className="bg-cyan-500/30 text-cyan-300 rounded-full w-7 h-7 flex items-center justify-center font-bold shrink-0 text-sm">3</span>
+                                        <p className="text-gray-300 text-sm">
+                                            <strong>結果の解釈</strong>：検証結果をどう判断するか
+                                        </p>
+                                    </div>
+                                </div>
+
+                                <div className="bg-yellow-500/10 border border-yellow-500/30 rounded-xl p-4">
+                                    <p className="text-yellow-300 text-sm font-medium mb-1">💡 Lateral Reading（横断的読解）</p>
+                                    <p className="text-gray-300 text-sm">
+                                        専門家は投稿を「じっくり読む」のではなく、
+                                        <strong className="text-green-400">すぐに外部で確認</strong>します。
+                                        このスキルを身につけましょう。
+                                    </p>
+                                </div>
+                            </div>
+
+                            {/* 検証行動の紹介 */}
+                            <div className="mb-8">
+                                <h3 className="text-lg font-bold mb-4 text-center">学ぶ検証行動</h3>
+                                <div className="grid grid-cols-2 md:grid-cols-3 gap-3">
+                                    <div className="bg-white/5 rounded-xl p-3 text-center">
+                                        <div className="text-2xl mb-1">👤</div>
+                                        <p className="text-xs font-bold text-gray-300">発信者の確認</p>
+                                    </div>
+                                    <div className="bg-white/5 rounded-xl p-3 text-center">
+                                        <div className="text-2xl mb-1">🔢</div>
+                                        <p className="text-xs font-bold text-gray-300">出典の検索</p>
+                                    </div>
+                                    <div className="bg-white/5 rounded-xl p-3 text-center">
+                                        <div className="text-2xl mb-1">🏛️</div>
+                                        <p className="text-xs font-bold text-gray-300">公式情報源</p>
+                                    </div>
+                                    <div className="bg-white/5 rounded-xl p-3 text-center">
+                                        <div className="text-2xl mb-1">📰</div>
+                                        <p className="text-xs font-bold text-gray-300">複数情報源</p>
+                                    </div>
+                                    <div className="bg-white/5 rounded-xl p-3 text-center">
+                                        <div className="text-2xl mb-1">✅</div>
+                                        <p className="text-xs font-bold text-gray-300">ファクトチェック</p>
+                                    </div>
+                                    <div className="bg-white/5 rounded-xl p-3 text-center">
+                                        <div className="text-2xl mb-1">🤔</div>
+                                        <p className="text-xs font-bold text-gray-300">適切な解釈</p>
+                                    </div>
+                                </div>
+                            </div>
+
+                            <button
+                                onClick={onContinue}
+                                className="w-full btn-primary text-white font-bold py-4 px-8 rounded-2xl text-lg"
+                            >
+                                Stage 3 を始める
+                            </button>
+                        </div>
+                    </div>
+                </div>
+            );
+        };
+
+        // Stage3: 情報検証訓練（Lateral Reading）
+        const StageCreate = ({ stage1Data, stage3Data, onComplete }) => {
+            const [currentScenario, setCurrentScenario] = useState(0);
+            const [currentStep, setCurrentStep] = useState(0); // 0: intro, 1-3: steps, 4: result
+            const [selectedAnswers, setSelectedAnswers] = useState([]);
+            const [showFeedback, setShowFeedback] = useState(false);
+            const [lastFeedback, setLastFeedback] = useState(null);
+            const [results, setResults] = useState([]);
+            const [showFullPost, setShowFullPost] = useState(false); // 投稿全文表示用
+
+            // シナリオ定義
+            const SCENARIOS = [
+                {
+                    id: 1,
+                    title: '数字の検証',
+                    difficulty: '易',
+                    difficultyColor: 'green',
+                    post: {
+                        author: '健康ニュース速報',
+                        authorHandle: '@health_news_jp',
+                        content: '【衝撃】最新調査で判明！\n87%の子供がスマホ依存症に！\n専門家「今すぐ対策を」\n\n子供の将来が心配な方は必見です。\n#拡散希望 #子育て',
+                        techniques: ['pseudoscience', 'fear', 'authority']
+                    },
+                    steps: [
+                        {
+                            question: 'この投稿を検証するために、まず何を確認しますか？',
+                            options: [
+                                { id: 'read_more', text: '投稿の文章をもっと詳しく読む', score: 0, feedback: '投稿を詳しく読んでも、情報の正確さは確認できません。外部で検証しましょう。' },
+                                { id: 'check_source', text: '「87%」という数字の出典を探す', score: 3, feedback: '正解！数字の根拠を外部で確認することが重要です。' },
+                                { id: 'check_likes', text: '投稿の「いいね」数を見る', score: 0, feedback: '「いいね」の数は情報の正確さとは関係ありません。' },
+                                { id: 'read_comments', text: 'コメント欄で他の人の意見を見る', score: 1, feedback: 'コメントも参考になることがありますが、一次情報源の確認が優先です。' }
+                            ]
+                        },
+                        {
+                            question: '「87%」の出典を確認するために、どこを見ますか？',
+                            options: [
+                                { id: 'same_sns', text: '同じSNSで「87% スマホ 子供」と検索', score: 1, feedback: 'SNS内検索では、同じ誤情報が拡散している可能性があります。' },
+                                { id: 'google', text: 'Googleで「87% スマホ 子供 調査」と検索', score: 2, feedback: '悪くない選択ですが、公式機関の情報を直接確認する方が確実です。' },
+                                { id: 'official', text: '厚労省や内閣府の調査を確認', score: 3, feedback: '正解！公式機関の一次情報源を確認することが最も信頼性が高いです。' },
+                                { id: 'chiebukuro', text: 'Yahoo!知恵袋で聞いてみる', score: 0, feedback: 'Q&Aサイトの回答も検証が必要です。一次情報源を直接確認しましょう。' }
+                            ]
+                        },
+                        {
+                            question: '公式機関のサイトで「87%」という数字は見つかりませんでした。この結果をどう解釈しますか？',
+                            verificationResult: '内閣府「青少年のインターネット利用環境実態調査」を確認した結果：\n・スマホ利用率：約70%（所持率）\n・「依存傾向」を示す数値：約10〜15%\n・「87%が依存症」というデータは確認できず',
+                            options: [
+                                { id: 'definite_lie', text: '87%は完全な嘘だと断定できる', score: 1, feedback: '「嘘」と断定するのは過剰です。「確認できなかった」が正確な表現です。' },
+                                { id: 'unverified', text: '87%の根拠は確認できず、信頼性に疑問がある', score: 3, feedback: '正解！「確認できない」と「嘘」は異なります。適切な判断です。' },
+                                { id: 'maybe_true', text: '公式データと違うが、投稿も正しいかもしれない', score: 0, feedback: '根拠が確認できない数字を信じるのは危険です。出典のない情報は疑いましょう。' }
+                            ]
+                        }
+                    ],
+                    summary: {
+                        learned: '数字の出典は必ず確認する。公式機関の一次情報を優先する。',
+                        key_point: '「87%」のような具体的な数字は、出典を確認することで信頼性を判断できます。'
+                    }
+                },
+                {
+                    id: 2,
+                    title: '発信者の検証',
+                    difficulty: '中',
+                    difficultyColor: 'yellow',
+                    post: {
+                        author: '健康科学研究所',
+                        authorHandle: '@health_science_lab',
+                        content: '【公式発表】当研究所の調査により、\nデジタルデトックスが睡眠の質を\n40%改善することが判明しました。\n\n詳細はプロフィールのリンクから。\n#研究成果 #睡眠改善',
+                        techniques: ['authority', 'pseudoscience']
+                    },
+                    steps: [
+                        {
+                            question: 'この投稿を検証するために、まず何を確認しますか？',
+                            options: [
+                                { id: 'click_link', text: 'プロフィールのリンクを開く', score: 1, feedback: 'リンク先の情報も検証が必要です。まずは発信者の信頼性を確認しましょう。' },
+                                { id: 'check_org', text: '「健康科学研究所」が実在するか確認する', score: 3, feedback: '正解！発信者の実在性・信頼性を確認することが重要です。' },
+                                { id: 'check_followers', text: 'フォロワー数を確認する', score: 0, feedback: 'フォロワー数は信頼性の指標にはなりません。' },
+                                { id: 'check_likes', text: '投稿の「いいね」数を見る', score: 0, feedback: '「いいね」の数は情報の正確さとは関係ありません。' }
+                            ]
+                        },
+                        {
+                            question: '「健康科学研究所」の実在を確認するために、どこを見ますか？',
+                            options: [
+                                { id: 'trust_profile', text: 'プロフィールに書いてある情報を信じる', score: 0, feedback: 'プロフィールは誰でも自由に書けます。外部で確認が必要です。' },
+                                { id: 'google_search', text: 'Googleで「健康科学研究所」と検索', score: 2, feedback: '検索は有効ですが、公的なデータベースでの確認がより確実です。' },
+                                { id: 'official_db', text: '法人登記や学術機関データベースで確認', score: 3, feedback: '正解！公的なデータベースで確認することで、実在性を判断できます。' },
+                                { id: 'other_sns', text: '他のSNSでアカウントを探す', score: 1, feedback: '複数のSNSで活動していても、組織の実在性は確認できません。' }
+                            ]
+                        },
+                        {
+                            question: '確認した結果、法人登記にも学術機関DBにも該当がありませんでした。どう解釈しますか？',
+                            verificationResult: '検証結果：\n・法人登記検索：該当なし\n・学術機関データベース：該当なし\n・Webサイト：個人ブログ風のページが存在\n・学術論文：該当する研究は見つからず',
+                            options: [
+                                { id: 'report', text: '研究所を名乗る詐欺なので通報すべき', score: 1, feedback: '詐欺と断定するには証拠が不十分です。ただし、信頼性は低いと判断すべきです。' },
+                                { id: 'low_trust', text: '研究機関としての信頼性は低く、主張を鵜呑みにすべきでない', score: 3, feedback: '正解！公的に確認できない組織の主張は、慎重に扱うべきです。' },
+                                { id: 'maybe_ok', text: '登記がなくても研究機関は存在しうるので問題ない', score: 0, feedback: '正式な研究機関なら公的記録があるはずです。確認できないなら信頼性は低いです。' }
+                            ]
+                        }
+                    ],
+                    summary: {
+                        learned: '発信者の実在性・信頼性は公的データベースで確認できる。',
+                        key_point: '「〇〇研究所」「〇〇協会」を名乗っていても、実在するとは限りません。'
+                    }
+                },
+                {
+                    id: 3,
+                    title: '総合的な検証',
+                    difficulty: '難',
+                    difficultyColor: 'red',
+                    post: {
+                        author: '真実を伝える会',
+                        authorHandle: '@truth_teller_jp',
+                        content: '【緊急拡散】テレビでは報道されない真実\n\nハーバード大学の研究チームが発表！\n5G電波がウイルスを活性化させる\nことが判明。\n\n大手メディアは利権のため隠蔽中。\n気づいた人だけシェアしてください。',
+                        techniques: ['authority', 'pseudoscience', 'polarization', 'fear']
+                    },
+                    steps: [
+                        {
+                            question: 'この投稿には複数の問題がありそうです。まず何を確認しますか？',
+                            options: [
+                                { id: 'check_shares', text: '他に同じ情報をシェアしている人がいるか確認', score: 1, feedback: '拡散状況は参考になりますが、真偽の判断にはなりません。一次情報源を確認しましょう。' },
+                                { id: 'check_harvard', text: 'ハーバード大学が本当にそのような研究を発表したか確認', score: 3, feedback: '正解！具体的な機関名が挙げられている場合、まずその事実を確認します。' },
+                                { id: 'think_reason', text: '「報道されない」理由を考える', score: 0, feedback: '推測よりも事実確認が重要です。外部で検証しましょう。' },
+                                { id: 'self_research', text: '5Gとウイルスの関係を自分で調べる', score: 2, feedback: '調べること自体は良いですが、まずは主張の根拠を確認する方が効率的です。' }
+                            ]
+                        },
+                        {
+                            question: 'この投稿の真偽を確認するために、どこを見ますか？（最も効果的なものを選択）',
+                            options: [
+                                { id: 'harvard_official', text: 'ハーバード大学の公式サイト', score: 2, feedback: '良い選択です。公式発表を確認することで、主張の根拠を検証できます。' },
+                                { id: 'fact_check', text: 'ファクトチェック機関（日本ファクトチェックセンター等）', score: 3, feedback: '正解！このような話題は既にファクトチェックされている可能性が高いです。効率的な検証方法です。' },
+                                { id: 'overseas_sns', text: '海外のSNSで検索', score: 1, feedback: '海外SNSでも誤情報は拡散します。公式機関やファクトチェック機関を優先しましょう。' },
+                                { id: 'pubmed', text: '学術論文データベース（PubMed等）', score: 2, feedback: '学術的な検証には有効ですが、この種の陰謀論はファクトチェック機関が既に検証済みの場合が多いです。' }
+                            ]
+                        },
+                        {
+                            question: '検証の結果、以下のことが分かりました。この投稿の問題点は何ですか？',
+                            verificationResult: '検証結果：\n・ハーバード大学：該当する発表なし\n・ファクトチェック：「5Gとウイルスの関連は科学的根拠なし」と判定済み\n・WHO：「5Gはウイルスを拡散しない」と公式見解\n・総務省：同様の見解を発表',
+                            isMultiSelect: true,
+                            options: [
+                                { id: 'fake_research', text: '架空の研究を根拠にしている', score: 1, isCorrect: true },
+                                { id: 'conspiracy', text: '陰謀論的な表現（「隠蔽」「気づいた人だけ」）', score: 1, isCorrect: true },
+                                { id: 'urge_spread', text: '拡散を促す煽り表現', score: 1, isCorrect: true },
+                                { id: 'low_followers', text: '投稿者のフォロワー数が少ない', score: -1, isCorrect: false }
+                            ]
+                        }
+                    ],
+                    summary: {
+                        learned: '複数の検証方法を組み合わせる。ファクトチェック機関を活用する。',
+                        key_point: '「報道されない真実」「気づいた人だけ」は陰謀論の典型的な表現です。'
+                    }
+                }
+            ];
+
+            const currentScenarioData = SCENARIOS[currentScenario];
+            const currentStepData = currentScenarioData.steps[currentStep - 1];
+
+            // 選択肢を選んだとき
+            const handleSelect = (option) => {
+                if (showFeedback) return;
+
+                const newAnswers = [...selectedAnswers, option];
+                setSelectedAnswers(newAnswers);
+                setLastFeedback(option.feedback);
+                setShowFeedback(true);
+            };
+
+            // 複数選択の場合
+            const [multiSelectAnswers, setMultiSelectAnswers] = useState([]);
+            
+            const handleMultiSelect = (option) => {
+                if (showFeedback) return;
+                
+                setMultiSelectAnswers(prev => {
+                    if (prev.find(o => o.id === option.id)) {
+                        return prev.filter(o => o.id !== option.id);
+                    } else {
+                        return [...prev, option];
+                    }
+                });
+            };
+
+            const handleMultiSelectSubmit = () => {
+                if (multiSelectAnswers.length === 0) return;
+                
+                const correctCount = multiSelectAnswers.filter(o => o.isCorrect).length;
+                const incorrectCount = multiSelectAnswers.filter(o => !o.isCorrect).length;
+                const totalCorrect = currentStepData.options.filter(o => o.isCorrect).length;
+                
+                const score = Math.max(0, correctCount - incorrectCount);
+                const feedback = correctCount === totalCorrect && incorrectCount === 0
+                    ? '完璧です！すべての問題点を正しく特定できました。'
+                    : correctCount > 0
+                        ? `${correctCount}個の問題点を特定できました。${incorrectCount > 0 ? '不適切な選択もありました。' : ''}`
+                        : '問題点を見逃しています。投稿の特徴をよく観察しましょう。';
+
+                const combinedOption = {
+                    id: 'multi',
+                    score: score,
+                    feedback: feedback,
+                    selected: multiSelectAnswers
+                };
+                
+                setSelectedAnswers(prev => [...prev, combinedOption]);
+                setLastFeedback(feedback);
+                setShowFeedback(true);
+            };
+
+            // 次へ進む
+            const handleNext = () => {
+                setShowFeedback(false);
+                setLastFeedback(null);
+                setMultiSelectAnswers([]);
+                setShowFullPost(false); // モーダルを閉じる
+
+                if (currentStep < 3) {
+                    setCurrentStep(currentStep + 1);
+                } else {
+                    // シナリオ完了 → 結果表示
+                    setCurrentStep(4);
+                }
+            };
+
+            // 次のシナリオへ
+            const handleNextScenario = () => {
+                // 結果を保存
+                const totalScore = selectedAnswers.reduce((sum, a) => sum + a.score, 0);
+                const maxScore = 9;
+                
+                setResults(prev => [...prev, {
+                    scenario: currentScenarioData,
+                    answers: selectedAnswers,
+                    totalScore,
+                    maxScore
+                }]);
+
+                if (currentScenario < SCENARIOS.length - 1) {
+                    setCurrentScenario(prev => prev + 1);
+                    setCurrentStep(0);
+                    setSelectedAnswers([]);
+                    setShowFullPost(false); // リセット
+                } else {
+                    // 全シナリオ完了
+                    const finalResults = [...results, {
+                        scenario: currentScenarioData,
+                        answers: selectedAnswers,
+                        totalScore: selectedAnswers.reduce((sum, a) => sum + a.score, 0),
+                        maxScore: 9
+                    }];
+                    
+                    onComplete({
+                        scenarios: finalResults
+                    });
+                }
+            };
+
+            const progress = ((currentScenario * 4 + currentStep) / (SCENARIOS.length * 4)) * 100;
+
+            // 難易度の色
+            const difficultyColors = {
+                green: 'bg-green-500/20 text-green-300 border-green-500/30',
+                yellow: 'bg-yellow-500/20 text-yellow-300 border-yellow-500/30',
+                red: 'bg-red-500/20 text-red-300 border-red-500/30'
+            };
+
+            return (
+                <div className="min-h-screen p-4 flex flex-col">
+                    {/* ヘッダー */}
+                    <div className="max-w-2xl w-full mx-auto mb-4">
+                        <div className="glass rounded-2xl p-4">
+                            <div className="flex items-center justify-between mb-2">
+                                <span className="text-sm text-gray-400">Stage 3: 情報検証訓練</span>
+                                <span className="text-sm text-gray-400">シナリオ {currentScenario + 1} / {SCENARIOS.length}</span>
+                            </div>
+                            <div className="h-2 bg-white/10 rounded-full overflow-hidden">
+                                <div className="progress-bar h-full rounded-full transition-all" style={{ width: `${progress}%` }}></div>
+                            </div>
+                        </div>
+                    </div>
+
+                    {/* メインコンテンツ */}
+                    <div className="flex-1 flex items-center justify-center">
+                        <div className="max-w-2xl w-full">
+                            <div className="animate-fade-in">
+                                <div className="glass rounded-3xl p-6 md:p-8">
+                                    
+                                    {/* シナリオイントロ */}
+                                    {currentStep === 0 && (
+                                        <>
+                                            <div className="text-center mb-6">
+                                                <div className={`inline-block px-3 py-1 rounded-full text-sm font-bold mb-3 border ${difficultyColors[currentScenarioData.difficultyColor]}`}>
+                                                    難易度: {currentScenarioData.difficulty}
+                                                </div>
+                                                <h2 className="text-2xl font-bold mb-2">
+                                                    🔍 {currentScenarioData.title}
+                                                </h2>
+                                                <p className="text-gray-400">以下の投稿を検証してください</p>
+                                            </div>
+
+                                            {/* 投稿表示 */}
+                                            <div className="bg-white/5 rounded-xl p-4 mb-6 border border-white/10">
+                                                <div className="flex items-center gap-3 mb-3">
+                                                    <div className="w-10 h-10 rounded-full bg-gradient-to-br from-indigo-500 to-purple-500 flex items-center justify-center text-lg">
+                                                        {currentScenarioData.post.author.charAt(0)}
+                                                    </div>
+                                                    <div>
+                                                        <p className="font-bold text-sm">{currentScenarioData.post.author}</p>
+                                                        <p className="text-xs text-gray-500">{currentScenarioData.post.authorHandle}</p>
+                                                    </div>
+                                                </div>
+                                                <p className="text-sm whitespace-pre-line mb-3">{currentScenarioData.post.content}</p>
+                                                <div className="flex flex-wrap gap-1">
+                                                    {currentScenarioData.post.techniques.map(tech => (
+                                                        <span key={tech} className="text-xs px-2 py-0.5 rounded-full bg-red-500/20 text-red-300">
+                                                            {TECHNIQUES[tech]?.name}
+                                                        </span>
+                                                    ))}
+                                                </div>
+                                            </div>
+
+                                            <button
+                                                onClick={() => setCurrentStep(1)}
+                                                className="w-full btn-primary text-white font-bold py-4 px-8 rounded-2xl text-lg"
+                                            >
+                                                検証を始める
+                                            </button>
+                                        </>
+                                    )}
+
+                                    {/* ステップ1-3: 検証行動 */}
+                                    {currentStep >= 1 && currentStep <= 3 && currentStepData && (
+                                        <>
+                                            <div className="flex items-center justify-between mb-4">
+                                                <h3 className="text-lg font-bold">
+                                                    Step {currentStep}/3
+                                                </h3>
+                                                <div className="flex gap-1">
+                                                    {[1, 2, 3].map(s => (
+                                                        <div
+                                                            key={s}
+                                                            className={`w-8 h-2 rounded-full ${
+                                                                s < currentStep ? 'bg-cyan-500' :
+                                                                s === currentStep ? 'bg-cyan-500/50' : 'bg-white/10'
+                                                            }`}
+                                                        />
+                                                    ))}
+                                                </div>
+                                            </div>
+
+                                            {/* 投稿の縮小表示（クリックで全文表示） */}
+                                            <div 
+                                                className="bg-white/5 rounded-xl p-3 mb-4 border border-white/10 cursor-pointer hover:bg-white/10 transition-all"
+                                                onClick={() => setShowFullPost(true)}
+                                            >
+                                                <div className="flex items-center justify-between">
+                                                    <div>
+                                                        <p className="text-xs text-gray-500 mb-1">検証対象:</p>
+                                                        <p className="text-sm line-clamp-2">{currentScenarioData.post.content.split('\n')[0]}...</p>
+                                                    </div>
+                                                    <span className="text-xs text-cyan-400 ml-2 shrink-0">👆 全文を見る</span>
+                                                </div>
+                                            </div>
+                                            
+                                            {/* 投稿全文表示モーダル */}
+                                            {showFullPost && (
+                                                <div className="fixed inset-0 bg-black/80 flex items-center justify-center z-50 p-4" onClick={() => setShowFullPost(false)}>
+                                                    <div className="bg-slate-800 rounded-2xl p-6 max-w-lg w-full max-h-[80vh] overflow-y-auto" onClick={e => e.stopPropagation()}>
+                                                        <div className="flex items-center justify-between mb-4">
+                                                            <h3 className="font-bold text-lg">検証対象の投稿</h3>
+                                                            <button 
+                                                                onClick={() => setShowFullPost(false)}
+                                                                className="text-gray-400 hover:text-white text-2xl"
+                                                            >
+                                                                ×
+                                                            </button>
+                                                        </div>
+                                                        
+                                                        <div className="bg-white/5 rounded-xl p-4 border border-white/10">
+                                                            <div className="flex items-center gap-3 mb-3">
+                                                                <div className="w-10 h-10 rounded-full bg-gradient-to-br from-indigo-500 to-purple-500 flex items-center justify-center text-lg">
+                                                                    {currentScenarioData.post.author.charAt(0)}
+                                                                </div>
+                                                                <div>
+                                                                    <p className="font-bold text-sm">{currentScenarioData.post.author}</p>
+                                                                    <p className="text-xs text-gray-500">{currentScenarioData.post.authorHandle}</p>
+                                                                </div>
+                                                            </div>
+                                                            <p className="text-sm whitespace-pre-line mb-3">{currentScenarioData.post.content}</p>
+                                                            <div className="flex flex-wrap gap-1">
+                                                                {currentScenarioData.post.techniques.map(tech => (
+                                                                    <span key={tech} className="text-xs px-2 py-0.5 rounded-full bg-red-500/20 text-red-300">
+                                                                        {TECHNIQUES[tech]?.name}
+                                                                    </span>
+                                                                ))}
+                                                            </div>
+                                                        </div>
+                                                        
+                                                        <button
+                                                            onClick={() => setShowFullPost(false)}
+                                                            className="w-full mt-4 bg-white/10 hover:bg-white/20 text-white font-bold py-3 px-6 rounded-xl transition-all"
+                                                        >
+                                                            閉じる
+                                                        </button>
+                                                    </div>
+                                                </div>
+                                            )}
+
+                                            {/* 検証結果（Step3のみ） */}
+                                            {currentStepData.verificationResult && (
+                                                <div className="bg-cyan-500/10 border border-cyan-500/30 rounded-xl p-4 mb-4">
+                                                    <p className="text-xs text-cyan-300 mb-2">📊 検証結果</p>
+                                                    <p className="text-sm whitespace-pre-line text-gray-300">{currentStepData.verificationResult}</p>
+                                                </div>
+                                            )}
+
+                                            {/* 質問 */}
+                                            <p className="text-gray-300 mb-4">{currentStepData.question}</p>
+
+                                            {/* 選択肢 */}
+                                            {!currentStepData.isMultiSelect ? (
+                                                <div className="space-y-2 mb-4">
+                                                    {currentStepData.options.map(option => (
+                                                        <button
+                                                            key={option.id}
+                                                            onClick={() => handleSelect(option)}
+                                                            disabled={showFeedback}
+                                                            className={`w-full text-left p-4 rounded-xl border-2 transition-all text-sm ${
+                                                                showFeedback && selectedAnswers[selectedAnswers.length - 1]?.id === option.id
+                                                                    ? option.score >= 3
+                                                                        ? 'border-green-500 bg-green-500/20'
+                                                                        : option.score >= 2
+                                                                            ? 'border-yellow-500 bg-yellow-500/20'
+                                                                            : 'border-red-500 bg-red-500/20'
+                                                                    : 'border-white/10 bg-white/5 hover:border-cyan-500/50 hover:bg-cyan-500/10'
+                                                            } ${showFeedback ? 'cursor-default' : ''}`}
+                                                        >
+                                                            {option.text}
+                                                        </button>
+                                                    ))}
+                                                </div>
+                                            ) : (
+                                                <div className="space-y-2 mb-4">
+                                                    <p className="text-xs text-gray-500 mb-2">（複数選択可）</p>
+                                                    {currentStepData.options.map(option => {
+                                                        const isSelected = multiSelectAnswers.find(o => o.id === option.id);
+                                                        return (
+                                                            <button
+                                                                key={option.id}
+                                                                onClick={() => handleMultiSelect(option)}
+                                                                disabled={showFeedback}
+                                                                className={`w-full text-left p-4 rounded-xl border-2 transition-all text-sm ${
+                                                                    showFeedback
+                                                                        ? option.isCorrect
+                                                                            ? 'border-green-500 bg-green-500/20'
+                                                                            : isSelected
+                                                                                ? 'border-red-500 bg-red-500/20'
+                                                                                : 'border-white/10 bg-white/5'
+                                                                        : isSelected
+                                                                            ? 'border-cyan-500 bg-cyan-500/20'
+                                                                            : 'border-white/10 bg-white/5 hover:border-cyan-500/50 hover:bg-cyan-500/10'
+                                                                } ${showFeedback ? 'cursor-default' : ''}`}
+                                                            >
+                                                                <div className="flex items-center gap-2">
+                                                                    <div className={`w-5 h-5 rounded border-2 flex items-center justify-center ${
+                                                                        isSelected ? 'border-cyan-500 bg-cyan-500' : 'border-white/30'
+                                                                    }`}>
+                                                                        {isSelected && <span className="text-white text-xs">✓</span>}
+                                                                    </div>
+                                                                    {option.text}
+                                                                </div>
+                                                            </button>
+                                                        );
+                                                    })}
+                                                    {!showFeedback && (
+                                                        <button
+                                                            onClick={handleMultiSelectSubmit}
+                                                            disabled={multiSelectAnswers.length === 0}
+                                                            className={`w-full mt-4 font-bold py-3 px-6 rounded-xl transition-all ${
+                                                                multiSelectAnswers.length > 0
+                                                                    ? 'btn-primary text-white'
+                                                                    : 'bg-gray-600 text-gray-400 cursor-not-allowed'
+                                                            }`}
+                                                        >
+                                                            回答を確定
+                                                        </button>
+                                                    )}
+                                                </div>
+                                            )}
+
+                                            {/* フィードバック */}
+                                            {showFeedback && lastFeedback && (
+                                                <div className={`rounded-xl p-4 mb-4 ${
+                                                    selectedAnswers[selectedAnswers.length - 1]?.score >= 3
+                                                        ? 'bg-green-500/10 border border-green-500/30'
+                                                        : selectedAnswers[selectedAnswers.length - 1]?.score >= 2
+                                                            ? 'bg-yellow-500/10 border border-yellow-500/30'
+                                                            : 'bg-red-500/10 border border-red-500/30'
+                                                }`}>
+                                                    <p className="text-sm">{lastFeedback}</p>
+                                                </div>
+                                            )}
+
+                                            {/* 次へボタン */}
+                                            {showFeedback && (
+                                                <button
+                                                    onClick={handleNext}
+                                                    className="w-full btn-primary text-white font-bold py-4 px-8 rounded-2xl text-lg"
+                                                >
+                                                    {currentStep < 3 ? '次のステップへ' : '結果を見る'}
+                                                </button>
+                                            )}
+                                        </>
+                                    )}
+
+                                    {/* シナリオ結果 */}
+                                    {currentStep === 4 && (
+                                        <>
+                                            <div className="text-center mb-6">
+                                                <div className="text-5xl mb-3">
+                                                    {selectedAnswers.reduce((sum, a) => sum + a.score, 0) >= 7 ? '🎉' :
+                                                     selectedAnswers.reduce((sum, a) => sum + a.score, 0) >= 4 ? '👍' : '📚'}
+                                                </div>
+                                                <h2 className="text-2xl font-bold mb-2">シナリオ完了！</h2>
+                                                <p className="text-gray-400">{currentScenarioData.title}</p>
+                                            </div>
+
+                                            {/* スコア */}
+                                            <div className="bg-white/5 rounded-xl p-6 mb-6 text-center">
+                                                <p className="text-sm text-gray-400 mb-2">検証スコア</p>
+                                                <p className={`text-4xl font-bold ${
+                                                    selectedAnswers.reduce((sum, a) => sum + a.score, 0) >= 7 ? 'text-green-400' :
+                                                    selectedAnswers.reduce((sum, a) => sum + a.score, 0) >= 4 ? 'text-yellow-400' : 'text-red-400'
+                                                }`}>
+                                                    {selectedAnswers.reduce((sum, a) => sum + a.score, 0)} / 9
+                                                </p>
+                                            </div>
+
+                                            {/* 各ステップの結果 */}
+                                            <div className="space-y-3 mb-6">
+                                                {selectedAnswers.map((answer, idx) => (
+                                                    <div key={idx} className="flex items-center justify-between bg-white/5 rounded-xl p-3">
+                                                        <span className="text-sm text-gray-400">Step {idx + 1}</span>
+                                                        <div className="flex items-center gap-2">
+                                                            <span className={`text-sm font-bold ${
+                                                                answer.score >= 3 ? 'text-green-400' :
+                                                                answer.score >= 2 ? 'text-yellow-400' : 'text-red-400'
+                                                            }`}>
+                                                                +{answer.score}点
+                                                            </span>
+                                                            <span className={`text-lg ${
+                                                                answer.score >= 3 ? '' : answer.score >= 2 ? '' : ''
+                                                            }`}>
+                                                                {answer.score >= 3 ? '✓' : answer.score >= 2 ? '△' : '✗'}
+                                                            </span>
+                                                        </div>
+                                                    </div>
+                                                ))}
+                                            </div>
+
+                                            {/* 学んだこと */}
+                                            <div className="bg-cyan-500/10 border border-cyan-500/30 rounded-xl p-4 mb-6">
+                                                <h3 className="font-bold mb-2 text-cyan-300 flex items-center gap-2">
+                                                    <span>💡</span>このシナリオで学んだこと
+                                                </h3>
+                                                <p className="text-sm text-gray-300 mb-2">{currentScenarioData.summary.learned}</p>
+                                                <p className="text-xs text-gray-400">{currentScenarioData.summary.key_point}</p>
+                                            </div>
+
+                                            <button
+                                                onClick={handleNextScenario}
+                                                className="w-full btn-primary text-white font-bold py-4 px-8 rounded-2xl text-lg"
+                                            >
+                                                {currentScenario < SCENARIOS.length - 1 ? '次のシナリオへ' : '最終評価へ'}
+                                            </button>
+                                        </>
+                                    )}
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            );
+        };
+
         // 最終評価
-        const FinalDebriefing = ({ stage1Data, stage3Data, onRestart, onShowData, onContinueToSurvey }) => {
+        const FinalDebriefing = ({ stage1Data, stage3Data, stageCreateData, onRestart, onShowData, onContinueToSurvey }) => {
             const totalTechniquesUsed = stage3Data.results.reduce((acc, r) => acc + r.post.techniques.length, 0);
             const ethicalPosts = stage3Data.results.filter(r => r.post.techniques.length === 0).length;
             
@@ -2078,13 +3109,13 @@
                 // 凍結された場合
                 if (stage3Data.suspended) {
                     return {
-                        title: '凍結されたアカウント',
+                        title: '永久凍結の人',
                         titleId: 'suspended',
-                        icon: '🚫',
+                        icon: '🧊',
                         color: 'from-gray-400 via-gray-500 to-gray-600',
                         bgColor: 'bg-gradient-to-r from-gray-500/20 via-gray-600/20 to-gray-700/20',
                         borderColor: 'border-gray-500/50',
-                        description: `ラウンド${stage3Data.suspendedAtRound}でアカウントが凍結されました。操作的な投稿の代償は大きいものでした。`
+                        description: `ラウンド${stage3Data.suspendedAtRound}でアカウントが凍結されました。やりすぎたね...。でもこれが現実のSNSなら、同じ末路をたどるインフルエンサーは少なくありません。`
                     };
                 }
 
@@ -2098,90 +3129,90 @@
                     // 高信頼性
                     if (followers >= 600) {
                         return {
-                            title: '理想のリーダー',
-                            icon: '👑',
+                            title: '聖人インフルエンサー',
+                            icon: '👼',
                             color: 'from-yellow-400 via-amber-400 to-orange-400',
                             bgColor: 'bg-gradient-to-r from-yellow-500/20 via-amber-500/20 to-orange-500/20',
                             borderColor: 'border-yellow-500/50',
-                            description: '高い信頼性を維持しながら大きな影響力を獲得しました。理想的な情報発信者です。'
+                            description: '高い信頼性を維持しながら大きな影響力を獲得。実在したら国民栄誉賞もの。現実にはほぼ存在しない伝説の存在です。'
                         };
                     } else if (followers >= 300) {
                         return {
-                            title: 'バランス型インフルエンサー',
+                            title: '良心的バズり手',
                             icon: '⚖️',
                             color: 'from-emerald-400 via-teal-400 to-cyan-400',
                             bgColor: 'bg-gradient-to-r from-emerald-500/20 via-teal-500/20 to-cyan-500/20',
                             borderColor: 'border-emerald-500/50',
-                            description: '信頼性と影響力のバランスを保ちました。持続可能な発信スタイルです。'
+                            description: '信頼性と影響力のバランスを保ちました。地味に見えて、実はこれが一番難しいんです。'
                         };
                     } else {
                         return {
-                            title: '誠実な発信者',
+                            title: '清く正しく目立たない人',
                             icon: '🌱',
                             color: 'from-green-400 via-emerald-400 to-teal-400',
                             bgColor: 'bg-gradient-to-r from-green-500/20 via-emerald-500/20 to-teal-500/20',
                             borderColor: 'border-green-500/50',
-                            description: '誠実さを最優先しました。影響力は控えめですが、信頼される存在です。'
+                            description: '誠実さを最優先。フォロワーは少ないけど、信頼されてる...はず。たぶん。きっと誰かが見てくれてる。'
                         };
                     }
                 } else if (ethics >= 40) {
                     // 中信頼性
                     if (followers >= 600) {
                         return {
-                            title: '人気者',
+                            title: 'グレーゾーンの覇者',
                             icon: '⭐',
                             color: 'from-pink-400 via-rose-400 to-red-400',
                             bgColor: 'bg-gradient-to-r from-pink-500/20 via-rose-500/20 to-red-500/20',
                             borderColor: 'border-pink-500/50',
-                            description: '大きな影響力を持ちますが、信頼性にやや課題があります。'
+                            description: '大きな影響力を持ちつつ、ギリギリ炎上しないラインを攻めました。現実のインフルエンサーに多いタイプ。'
                         };
                     } else if (followers >= 300) {
                         return {
-                            title: '成長中の発信者',
+                            title: '発展途上アカウント',
                             icon: '📈',
                             color: 'from-blue-400 via-indigo-400 to-purple-400',
                             bgColor: 'bg-gradient-to-r from-blue-500/20 via-indigo-500/20 to-purple-500/20',
                             borderColor: 'border-blue-500/50',
-                            description: '影響力と信頼性の両方を伸ばす途上にあります。'
+                            description: '可もなく不可もなく。このまま行くか、闇落ちするか、あなた次第。'
                         };
                     } else {
                         return {
-                            title: '慎重な観察者',
+                            title: 'ROM専から一歩踏み出した人',
                             icon: '👀',
                             color: 'from-slate-400 via-gray-400 to-zinc-400',
                             bgColor: 'bg-gradient-to-r from-slate-500/20 via-gray-500/20 to-zinc-500/20',
                             borderColor: 'border-slate-500/50',
-                            description: '控えめな発信スタイルです。リスクを避けつつ様子を見ています。'
+                            description: 'おとなしめの発信。「いいね」はするけど投稿は控えめ。それはそれで賢い選択かも？'
                         };
                     }
                 } else {
                     // 低信頼性
                     if (followers >= 600) {
                         return {
-                            title: 'デマ拡散者',
+                            title: '闇のカリスマ',
                             icon: '💀',
                             color: 'from-red-400 via-rose-500 to-pink-500',
                             bgColor: 'bg-gradient-to-r from-red-500/20 via-rose-500/20 to-pink-500/20',
                             borderColor: 'border-red-500/50',
-                            description: '大きな影響力を持ちますが、信頼性が著しく低下しています。社会に悪影響を与えるリスクがあります。'
+                            description: '大量のフォロワーを獲得したけど、みんなを騙して得た人気です。現実なら訴訟リスク特大。いつか痛い目見るタイプ。'
                         };
                     } else if (followers >= 300) {
                         return {
-                            title: '炎上系インフルエンサー',
+                            title: '炎上芸人見習い',
                             icon: '🔥',
                             color: 'from-orange-400 via-red-400 to-rose-400',
                             bgColor: 'bg-gradient-to-r from-orange-500/20 via-red-500/20 to-rose-500/20',
                             borderColor: 'border-orange-500/50',
-                            description: '注目は集めていますが、批判も多く信頼性が低下しています。'
+                            description: '注目は集まってるけど、だいたい批判。「炎上商法」という言葉を体現中。消火器の用意を推奨。'
                         };
                     } else {
                         return {
-                            title: '迷える初心者',
-                            icon: '❓',
+                            title: 'スベり散らかした人',
+                            icon: '🦗',
                             color: 'from-gray-400 via-slate-400 to-zinc-400',
                             bgColor: 'bg-gradient-to-r from-gray-500/20 via-slate-500/20 to-zinc-500/20',
                             borderColor: 'border-gray-500/50',
-                            description: '影響力も信頼性も低い状態です。発信戦略を見直す必要があります。'
+                            description: '操作的な投稿をしたのに誰にも響かなかった...。ある意味一番悲しい結末。でも被害者が出なかったのは不幸中の幸い？'
                         };
                     }
                 }
@@ -2303,6 +3334,78 @@
                                     )}
                                 </div>
                             </div>
+
+                            {/* Stage3結果: 情報検証訓練 */}
+                            {stageCreateData && stageCreateData.scenarios && (
+                                <div className="bg-white/5 rounded-2xl p-6 mb-6">
+                                    <h2 className="text-xl font-bold mb-4 flex items-center gap-2">
+                                        <span className="text-2xl">🔍</span> Stage 3: 情報検証訓練
+                                    </h2>
+                                    
+                                    <div className="space-y-4">
+                                        {stageCreateData.scenarios.map((result, index) => (
+                                            <div key={index} className="bg-white/5 rounded-xl p-4 border border-white/10">
+                                                <div className="flex items-center justify-between mb-2">
+                                                    <div className="flex items-center gap-2">
+                                                        <span className={`text-xs px-2 py-0.5 rounded-full ${
+                                                            result.scenario.difficultyColor === 'green' ? 'bg-green-500/20 text-green-300' :
+                                                            result.scenario.difficultyColor === 'yellow' ? 'bg-yellow-500/20 text-yellow-300' :
+                                                            'bg-red-500/20 text-red-300'
+                                                        }`}>
+                                                            {result.scenario.difficulty}
+                                                        </span>
+                                                        <span className="font-bold text-sm">{result.scenario.title}</span>
+                                                    </div>
+                                                    <span className={`text-sm font-bold ${
+                                                        result.totalScore >= 7 ? 'text-green-400' :
+                                                        result.totalScore >= 4 ? 'text-yellow-400' : 'text-red-400'
+                                                    }`}>
+                                                        {result.totalScore}/{result.maxScore}点
+                                                    </span>
+                                                </div>
+                                                
+                                                {/* 各ステップの結果 */}
+                                                <div className="flex gap-2">
+                                                    {result.answers.map((answer, idx) => (
+                                                        <div key={idx} className={`flex-1 text-center py-1 rounded text-xs ${
+                                                            answer.score >= 3 ? 'bg-green-500/20 text-green-300' :
+                                                            answer.score >= 2 ? 'bg-yellow-500/20 text-yellow-300' :
+                                                            'bg-red-500/20 text-red-300'
+                                                        }`}>
+                                                            Step{idx + 1}: +{answer.score}
+                                                        </div>
+                                                    ))}
+                                                </div>
+                                            </div>
+                                        ))}
+                                    </div>
+                                    
+                                    {/* 総評 */}
+                                    {(() => {
+                                        const totalScore = stageCreateData.scenarios.reduce((sum, s) => sum + s.totalScore, 0);
+                                        const maxTotal = stageCreateData.scenarios.reduce((sum, s) => sum + s.maxScore, 0);
+                                        const percentage = (totalScore / maxTotal) * 100;
+                                        return (
+                                            <div className={`mt-4 p-4 rounded-xl ${
+                                                percentage >= 70 ? 'bg-green-500/10 border border-green-500/30' :
+                                                percentage >= 40 ? 'bg-yellow-500/10 border border-yellow-500/30' :
+                                                'bg-red-500/10 border border-red-500/30'
+                                            }`}>
+                                                <p className={`text-sm ${
+                                                    percentage >= 70 ? 'text-green-300' :
+                                                    percentage >= 40 ? 'text-yellow-300' : 'text-red-300'
+                                                }`}>
+                                                    {percentage >= 70 
+                                                        ? '👏 素晴らしい検証力！情報の真偽を自分で確認するスキルが身についています。'
+                                                        : percentage >= 40
+                                                            ? '💪 検証スキルが向上中！公式情報源を優先して確認する習慣をつけましょう。'
+                                                            : '📚 情報検証は練習が必要です。「投稿を読む」のではなく「外部で確認する」ことを意識しましょう。'}
+                                                </p>
+                                            </div>
+                                        );
+                                    })()}
+                                </div>
+                            )}
 
                             {/* 社会的影響（累計拡散） */}
                             <div className="bg-gradient-to-b from-slate-800/50 to-slate-900/50 rounded-2xl p-6 mb-6 border border-white/10">
@@ -3089,11 +4192,13 @@
 
         // メインアプリ
         const App = () => {
-            const [stage, setStage] = useState('consent'); // consent, intro, stage1, stage2intro, stage3, debrief, survey, complete
+            const [stage, setStage] = useState('consent'); // consent, intro, stage1, stage2intro, stage3, stage3intro, stageCreate, debrief, survey, complete
             const [stage1Data, setStage1Data] = useState(null);
             const [stage3Data, setStage3Data] = useState(null);
+            const [stageCreateData, setStageCreateData] = useState(null);
             const [surveyData, setSurveyData] = useState(null);
             const [showDataExport, setShowDataExport] = useState(false);
+            const [firebaseInitialized, setFirebaseInitialized] = useState(false);
             
             // URLパラメータから実験条件を取得
             const [experimentCondition] = useState(() => {
@@ -3104,6 +4209,47 @@
 
             // 被験者情報
             const [participantInfo, setParticipantInfo] = useState(null);
+            
+            // Firebase初期化を待機
+            useEffect(() => {
+                const checkFirebase = () => {
+                    if (window.firebaseReady) {
+                        setFirebaseInitialized(true);
+                    }
+                };
+                
+                if (window.firebaseReady) {
+                    setFirebaseInitialized(true);
+                } else {
+                    window.addEventListener('firebaseReady', checkFirebase);
+                    return () => window.removeEventListener('firebaseReady', checkFirebase);
+                }
+            }, []);
+            
+            // Firebaseにデータを保存する関数
+            const saveToFirebase = async (path, data, merge = true) => {
+                if (!firebaseInitialized || !window.firebaseDB) {
+                    console.warn('Firebase not initialized yet');
+                    return false;
+                }
+                
+                try {
+                    const docRef = window.firebaseDoc(window.firebaseDB, 'sessions', sessionId);
+                    if (merge) {
+                        await window.firebaseSetDoc(docRef, {
+                            [path]: data,
+                            lastUpdated: new Date().toISOString()
+                        }, { merge: true });
+                    } else {
+                        await window.firebaseSetDoc(docRef, data);
+                    }
+                    console.log(`Saved to Firebase: ${path}`);
+                    return true;
+                } catch (error) {
+                    console.error('Firebase save error:', error);
+                    return false;
+                }
+            };
             
             // ブラウザバック・タブを閉じる際の警告
             useEffect(() => {
@@ -3135,6 +4281,8 @@
                 stage2IntroCompleted: false,
                 stage3Started: false,
                 stage3Completed: false,
+                stageCreateStarted: false,
+                stageCreateCompleted: false,
                 debriefViewed: false,
                 surveyStarted: false,
                 surveyCompleted: false,
@@ -3151,6 +4299,8 @@
                 stage2IntroEndTime: null,
                 stage3StartTime: null,
                 stage3EndTime: null,
+                stageCreateStartTime: null,
+                stageCreateEndTime: null,
                 debriefTime: null,
                 surveyStartTime: null,
                 surveyEndTime: null,
@@ -3165,11 +4315,31 @@
                     demographics: consentData.demographics
                 });
                 
+                const consentTime = new Date().toISOString();
                 setTimestamps(prev => ({ 
                     ...prev, 
-                    consentTime: new Date().toISOString()
+                    consentTime: consentTime
                 }));
                 setProgress(prev => ({ ...prev, consentCompleted: true }));
+                
+                // Firebaseにセッション開始を記録
+                saveToFirebase('metadata', {
+                    sessionId: sessionId,
+                    participantId: participantId,
+                    experimentCondition: experimentCondition,
+                    startedAt: consentTime,
+                    userAgent: navigator.userAgent,
+                    screenSize: `${window.innerWidth}x${window.innerHeight}`,
+                    language: navigator.language
+                });
+                
+                if (consentData.demographics) {
+                    saveToFirebase('preSurvey', {
+                        demographics: consentData.demographics,
+                        completedAt: consentTime
+                    });
+                }
+                
                 setStage('intro');
             };
 
@@ -3186,12 +4356,34 @@
             const handleStage1Complete = (data) => {
                 const endTime = new Date().toISOString();
                 setTimestamps(prev => ({ ...prev, stage1EndTime: endTime }));
-                setStage1Data({
+                
+                const stage1Result = {
                     ...data,
                     startTime: timestamps.stage1StartTime,
                     endTime: endTime
-                });
+                };
+                setStage1Data(stage1Result);
                 setProgress(prev => ({ ...prev, stage1Completed: true }));
+                
+                // Firebaseに保存
+                saveToFirebase('stage1', {
+                    completedAt: endTime,
+                    totalScore: data.score,
+                    accuracy: data.accuracy,
+                    results: data.answers ? data.answers.map(r => ({
+                        questionId: r.questionId,
+                        isManipulative: r.isManipulative,
+                        userJudgment: r.userJudgment,
+                        isCorrect: r.isCorrect,
+                        selectedTechniques: r.selectedTechniques || [],
+                        correctTechniques: r.correctTechniques || [],
+                        rebuttalCorrect: r.rebuttalCorrect,
+                        rebuttalPartial: r.rebuttalPartial
+                    })) : [],
+                    weakTechniques: data.weakTechniques || [],
+                    rebuttalStats: data.rebuttalStats || null
+                });
+                
                 setStage('stage2intro');
             };
 
@@ -3210,15 +4402,85 @@
                 const endTime = new Date().toISOString();
                 setTimestamps(prev => ({ 
                     ...prev, 
-                    stage3EndTime: endTime,
-                    debriefTime: endTime 
+                    stage3EndTime: endTime
                 }));
-                setStage3Data({
+                
+                const stage3Result = {
                     ...data,
                     startTime: timestamps.stage3StartTime,
                     endTime: endTime
+                };
+                setStage3Data(stage3Result);
+                setProgress(prev => ({ ...prev, stage3Completed: true }));
+                
+                // Firebaseに保存（これはStage2 = インフルエンサー体験）
+                saveToFirebase('stage2', {
+                    completedAt: endTime,
+                    finalFollowers: data.totalFollowers,
+                    finalCredibility: data.finalEthics,
+                    suspended: data.suspended || false,
+                    suspendedAtRound: data.suspendedAtRound || null,
+                    rounds: data.results ? data.results.map((r, idx) => ({
+                        roundNumber: r.round || idx + 1,
+                        selectedPost: {
+                            content: r.post?.content || '',
+                            techniques: r.post?.techniques || []
+                        },
+                        target: r.target?.name || '',
+                        followersGained: r.newFollowers || 0,
+                        credibilityChange: r.ethicsChange || 0,
+                        likes: r.likes || 0,
+                        shares: r.shares || 0
+                    })) : []
                 });
-                setProgress(prev => ({ ...prev, stage3Completed: true, debriefViewed: true }));
+                
+                setStage('stage3intro');
+            };
+
+            const handleStage3IntroComplete = () => {
+                const now = new Date().toISOString();
+                setTimestamps(prev => ({ 
+                    ...prev, 
+                    stageCreateStartTime: now 
+                }));
+                setProgress(prev => ({ ...prev, stageCreateStarted: true }));
+                setStage('stageCreate');
+            };
+
+            const handleStageCreateComplete = (data) => {
+                const endTime = new Date().toISOString();
+                setTimestamps(prev => ({ 
+                    ...prev, 
+                    stageCreateEndTime: endTime,
+                    debriefTime: endTime 
+                }));
+                
+                const stageCreateResult = {
+                    ...data,
+                    startTime: timestamps.stageCreateStartTime,
+                    endTime: endTime
+                };
+                setStageCreateData(stageCreateResult);
+                setProgress(prev => ({ ...prev, stageCreateCompleted: true, debriefViewed: true }));
+                
+                // Firebaseに保存（これはStage3 = 情報検証訓練）
+                saveToFirebase('stage3', {
+                    completedAt: endTime,
+                    totalScore: data.scenarios ? data.scenarios.reduce((sum, s) => sum + (s.totalScore || 0), 0) : 0,
+                    scenarios: data.scenarios ? data.scenarios.map(s => ({
+                        scenarioId: s.scenario?.id || 0,
+                        title: s.scenario?.title || '',
+                        difficulty: s.scenario?.difficulty || '',
+                        answers: s.answers ? s.answers.map((a, idx) => ({
+                            stepNumber: idx + 1,
+                            selectedOptionId: a.id || '',
+                            score: a.score || 0
+                        })) : [],
+                        totalScore: s.totalScore || 0,
+                        maxScore: s.maxScore || 9
+                    })) : []
+                });
+                
                 setStage('debrief');
             };
 
@@ -3240,6 +4502,18 @@
                 }));
                 setSurveyData(responses);
                 setProgress(prev => ({ ...prev, surveyCompleted: true, fullyCompleted: true }));
+                
+                // Firebaseに事後アンケートと完了を記録
+                saveToFirebase('postSurvey', {
+                    responses: responses,
+                    completedAt: endTime
+                });
+                
+                saveToFirebase('metadata', {
+                    completedAt: endTime,
+                    fullyCompleted: true
+                });
+                
                 setStage('complete');
             };
 
@@ -3247,6 +4521,7 @@
                 setStage('intro');
                 setStage1Data(null);
                 setStage3Data(null);
+                setStageCreateData(null);
                 setSurveyData(null);
                 setTimestamps(prev => ({
                     consentTime: prev.consentTime,
@@ -3256,6 +4531,8 @@
                     stage2IntroEndTime: null,
                     stage3StartTime: null,
                     stage3EndTime: null,
+                    stageCreateStartTime: null,
+                    stageCreateEndTime: null,
                     debriefTime: null,
                     surveyStartTime: null,
                     surveyEndTime: null,
@@ -3393,10 +4670,13 @@
                     {stage === 'stage1' && <Stage1 onComplete={handleStage1Complete} />}
                     {stage === 'stage2intro' && <Stage2Intro stage1Data={stage1Data} onContinue={handleStage2IntroComplete} />}
                     {stage === 'stage3' && <Stage3 stage1Data={stage1Data} onComplete={handleStage3Complete} />}
+                    {stage === 'stage3intro' && <Stage3Intro stage3Data={stage3Data} onContinue={handleStage3IntroComplete} />}
+                    {stage === 'stageCreate' && <StageCreate stage1Data={stage1Data} stage3Data={stage3Data} onComplete={handleStageCreateComplete} />}
                     {stage === 'debrief' && (
                         <FinalDebriefing 
                             stage1Data={stage1Data} 
-                            stage3Data={stage3Data} 
+                            stage3Data={stage3Data}
+                            stageCreateData={stageCreateData}
                             onRestart={handleRestart}
                             onShowData={() => setShowDataExport(true)}
                             onContinueToSurvey={handleContinueToSurvey}
